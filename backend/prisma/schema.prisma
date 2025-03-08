@@ -1,0 +1,457 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuário
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          UserRole  @default(TEACHER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relacionamentos
+  students      Student[]
+  userSyncs     UserSync[]
+  teamMemberships RtiTeamMember[]
+  meetingParticipations MeetingParticipant[]
+  tutorCommunications TutorCommunication[]
+  sentMessages       InternalMessage[] @relation("SentMessages")
+  receivedMessages   InternalMessage[] @relation("ReceivedMessages")
+  assignedReferrals  Referral[]       @relation("AssignedReferrals")
+  createdReferrals   Referral[]       @relation("CreatedReferrals")
+  notifications      Notification[]
+  
+  @@map("users")
+}
+
+// Modelo de Estudante
+model Student {
+  id            String    @id @default(uuid())
+  name          String
+  grade         String
+  dateOfBirth   DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  assessments   Assessment[]
+  interventions Intervention[]
+  teams              StudentTeam[]
+  tutorCommunications TutorCommunication[]
+  messages           InternalMessage[]
+  referrals          Referral[]
+  
+  @@map("students")
+}
+
+// Modelo de Avaliação
+model Assessment {
+  id            String    @id @default(uuid())
+  date          DateTime
+  type          String
+  score         Float
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  
+  @@map("assessments")
+}
+
+// Modelo de Intervenção
+model Intervention {
+  id            String    @id @default(uuid())
+  startDate     DateTime
+  endDate       DateTime?
+  type          String
+  description   String
+  status        InterventionStatus @default(ACTIVE)
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  
+  @@map("interventions")
+}
+
+// Modelo de Integração com Plataforma
+model PlatformIntegration {
+  id            String    @id @default(uuid())
+  platform      Platform
+  name          String
+  clientId      String
+  clientSecret  String
+  tenantId      String?   // Para Microsoft Teams
+  redirectUri   String
+  scopes        String    // Escopos de permissão separados por vírgula
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  classSyncs    ClassSync[]
+  userSyncs     UserSync[]
+  webhooks      Webhook[]
+  ltiDeployments LtiDeployment[]
+  
+  @@map("platform_integrations")
+}
+
+// Modelo de Sincronização de Turma
+model ClassSync {
+  id                String    @id @default(uuid())
+  externalClassId   String
+  className         String
+  lastSyncedAt      DateTime
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  integrationId     String
+  integration       PlatformIntegration @relation(fields: [integrationId], references: [id])
+  userSyncs         UserSync[]
+  
+  @@map("class_syncs")
+}
+
+// Modelo de Sincronização de Usuário
+model UserSync {
+  id                String    @id @default(uuid())
+  externalUserId    String
+  email             String
+  role              String    // Papel do usuário na plataforma externa
+  lastSyncedAt      DateTime
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  userId            String?
+  user              User?     @relation(fields: [userId], references: [id])
+  integrationId     String
+  integration       PlatformIntegration @relation(fields: [integrationId], references: [id])
+  classSyncId       String?
+  classSync         ClassSync? @relation(fields: [classSyncId], references: [id])
+  
+  @@map("user_syncs")
+}
+
+// Modelo de Webhook
+model Webhook {
+  id                String    @id @default(uuid())
+  url               String
+  secret            String
+  events            String    // Eventos inscritos separados por vírgula
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  integrationId     String
+  integration       PlatformIntegration @relation(fields: [integrationId], references: [id])
+  
+  @@map("webhooks")
+}
+
+// Modelo de Deployment LTI
+model LtiDeployment {
+  id                String    @id @default(uuid())
+  deploymentId      String    // ID do deployment na plataforma LTI
+  issuer            String    // URL do emissor LTI
+  clientId          String    // ID do cliente para este deployment
+  authLoginUrl      String    // URL de login para autenticação
+  authTokenUrl      String    // URL para obtenção de tokens
+  keysetUrl         String    // URL do conjunto de chaves JWK
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  integrationId     String
+  integration       PlatformIntegration @relation(fields: [integrationId], references: [id])
+  
+  @@map("lti_deployments")
+}
+
+// Modelo de Equipe RTI
+model RtiTeam {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  members       RtiTeamMember[]
+  meetings      RtiMeeting[]
+  students      StudentTeam[]
+  referrals     Referral[]
+  
+  @@map("rti_teams")
+}
+
+// Modelo de Membro de Equipe RTI
+model RtiTeamMember {
+  id            String    @id @default(uuid())
+  role          TeamRole  // Papel na equipe (coordenador, especialista, etc.)
+  joinedAt      DateTime  @default(now())
+  leftAt        DateTime?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  teamId        String
+  team          RtiTeam   @relation(fields: [teamId], references: [id])
+  
+  @@map("rti_team_members")
+}
+
+// Modelo de Associação Estudante-Equipe
+model StudentTeam {
+  id            String    @id @default(uuid())
+  assignedAt    DateTime  @default(now())
+  removedAt     DateTime?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  teamId        String
+  team          RtiTeam   @relation(fields: [teamId], references: [id])
+  
+  @@map("student_teams")
+}
+
+// Modelo de Reunião RTI
+model RtiMeeting {
+  id            String    @id @default(uuid())
+  title         String
+  date          DateTime
+  location      String?
+  status        MeetingStatus @default(SCHEDULED)
+  notes         String?   @db.Text
+  summary       String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  teamId        String
+  team          RtiTeam   @relation(fields: [teamId], references: [id])
+  participants  MeetingParticipant[]
+  referrals     Referral[]
+  
+  @@map("rti_meetings")
+}
+
+// Modelo de Participante de Reunião
+model MeetingParticipant {
+  id            String    @id @default(uuid())
+  attended      Boolean   @default(false)
+  role          String?   // Papel na reunião (facilitador, secretário, etc.)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  meetingId     String
+  meeting       RtiMeeting @relation(fields: [meetingId], references: [id])
+  
+  @@map("meeting_participants")
+}
+
+// Modelo de Comunicação com Tutor/Responsável
+model TutorCommunication {
+  id            String    @id @default(uuid())
+  type          CommunicationType
+  date          DateTime
+  subject       String
+  content       String    @db.Text
+  contactInfo   String?   // Email ou telefone do tutor/responsável
+  contactName   String?   // Nome do tutor/responsável
+  status        CommunicationStatus @default(SENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  
+  @@map("tutor_communications")
+}
+
+// Modelo de Mensagem Interna
+model InternalMessage {
+  id            String    @id @default(uuid())
+  subject       String
+  content       String    @db.Text
+  isRead        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  senderId      String
+  sender        User      @relation(name: "SentMessages", fields: [senderId], references: [id])
+  receiverId    String
+  receiver      User      @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
+  studentId     String?
+  student       Student?  @relation(fields: [studentId], references: [id])
+  
+  @@map("internal_messages")
+}
+
+// Modelo de Encaminhamento
+model Referral {
+  id            String    @id @default(uuid())
+  title         String
+  description   String    @db.Text
+  dueDate       DateTime?
+  status        ReferralStatus @default(PENDING)
+  priority      ReferralPriority @default(MEDIUM)
+  completedAt   DateTime?
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  assignedToId  String
+  assignedTo    User      @relation(name: "AssignedReferrals", fields: [assignedToId], references: [id])
+  createdById   String
+  createdBy     User      @relation(name: "CreatedReferrals", fields: [createdById], references: [id])
+  teamId        String?
+  team          RtiTeam?  @relation(fields: [teamId], references: [id])
+  meetingId     String?
+  meeting       RtiMeeting? @relation(fields: [meetingId], references: [id])
+  
+  @@map("referrals")
+}
+
+// Modelo de Notificação
+model Notification {
+  id            String    @id @default(uuid())
+  type          NotificationType
+  title         String
+  content       String
+  isRead        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  
+  @@map("notifications")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  TEACHER
+  SPECIALIST
+}
+
+enum InterventionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// Enum para tipos de plataforma
+enum Platform {
+  GOOGLE_CLASSROOM
+  MICROSOFT_TEAMS
+  LTI
+  CUSTOM
+}
+
+enum TeamRole {
+  COORDINATOR
+  SPECIALIST
+  TEACHER
+  COUNSELOR
+  PSYCHOLOGIST
+  OTHER
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum CommunicationType {
+  EMAIL
+  PHONE
+  IN_PERSON
+  LETTER
+  OTHER
+}
+
+enum CommunicationStatus {
+  DRAFT
+  SENT
+  DELIVERED
+  READ
+  REPLIED
+  FAILED
+}
+
+enum ReferralStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ReferralPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  MEETING_SCHEDULED
+  MEETING_REMINDER
+  REFERRAL_ASSIGNED
+  REFERRAL_DUE_SOON
+  REFERRAL_OVERDUE
+  MESSAGE_RECEIVED
+  STUDENT_UPDATED
+  ASSESSMENT_ADDED
+  INTERVENTION_UPDATED
+  TEAM_INVITATION
+}

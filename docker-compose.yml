@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Serviço MySQL
+  mysql:
+    container_name: rti_mtss_mysql
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rti_mtss_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - rti_mtss_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Serviço Redis
+  redis:
+    image: redis:alpine
+    container_name: rti_mtss_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - rti_mtss_network
+
+  # Serviço Backend
+  backend:
+    container_name: rti_mtss_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://root:root@mysql:3306/rti_mtss_db
+      JWT_SECRET: your-jwt-secret
+      JWT_EXPIRATION: 3600
+      JWT_REFRESH_SECRET: your-jwt-refresh-secret
+      JWT_REFRESH_EXPIRATION: 604800
+      PORT: 3001
+    networks:
+      - rti_mtss_network
+    depends_on:
+      - mysql
+
+  # Serviço Frontend
+  frontend:
+    container_name: rti_mtss_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://backend:3001/api
+    networks:
+      - rti_mtss_network
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+
+networks:
+  rti_mtss_network:
+    driver: bridge 
