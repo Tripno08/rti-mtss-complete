@@ -12,6 +12,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
+import { CommunicationsModule } from './modules/communications/communications.module';
+import { ReferralsModule } from './modules/referrals/referrals.module';
 import { DificuldadesAprendizagemModule } from './modules/dificuldades-aprendizagem/dificuldades-aprendizagem.module';
 import { ScreeningInstrumentsModule } from './modules/screening-instruments/screening-instruments.module';
 import { ScreeningsModule } from './modules/screenings/screenings.module';
@@ -33,6 +35,8 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     IntegrationsModule,
     TeamsModule,
     MeetingsModule,
+    CommunicationsModule,
+    ReferralsModule,
     DificuldadesAprendizagemModule,
     ScreeningInstrumentsModule,
     ScreeningsModule,
