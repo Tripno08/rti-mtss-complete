@@ -176,7 +176,7 @@ export default function InterventionsReportPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Relatório de Intervenções</h1>
             <p className="text-muted-foreground">
-              Análise detalhada das intervenções realizadas no programa RTI/MTSS
+              Análise detalhada das intervenções realizadas no programa Innerview
             </p>
           </div>
         </div>

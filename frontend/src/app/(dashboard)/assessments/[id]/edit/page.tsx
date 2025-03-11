@@ -55,6 +55,8 @@ interface PageProps {
 }
 
 export default function EditAssessmentPage({ params }: PageProps) {
+  const resolvedParams = React.use(params);
+  const id = resolvedParams.id;
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +77,7 @@ export default function EditAssessmentPage({ params }: PageProps) {
     const fetchData = async () => {
       try {
         const [assessmentResponse, studentsResponse] = await Promise.all([
-          api.get(`/assessments/${params.id}`),
+          api.get(`/assessments/${id}`),
           api.get('/students'),
         ]);
 
@@ -102,13 +104,13 @@ export default function EditAssessmentPage({ params }: PageProps) {
     };
 
     fetchData();
-  }, [params.id, form]);
+  }, [id, form]);
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await api.patch(`/assessments/${params.id}`, data);
+      await api.patch(`/assessments/${id}`, data);
       toast.success('Avaliação atualizada com sucesso!');
-      router.push(`/assessments/${params.id}`);
+      router.push(`/assessments/${id}`);
     } catch (error) {
       console.error('Erro ao atualizar avaliação:', error);
       toast.error('Erro ao atualizar avaliação.');
@@ -140,7 +142,7 @@ export default function EditAssessmentPage({ params }: PageProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Editar Avaliação</h1>
-        <Button variant="outline" onClick={() => router.push(`/assessments/${params.id}`)}>
+        <Button variant="outline" onClick={() => router.push(`/assessments/${id}`)}>
           Cancelar
         </Button>
       </div>

@@ -89,7 +89,7 @@ export default function SchoolSettingsPage() {
       emailNotifications: true,
       smsNotifications: false,
       parentPortalEnabled: true,
-      reportHeader: 'Sistema RTI/MTSS - Relatório de Avaliação',
+      reportHeader: 'Sistema Innerview - Relatório de Avaliação',
       reportFooter: '© 2024 Escola Municipal João da Silva - Todos os direitos reservados',
       includeLogo: true,
       includeSignature: true,

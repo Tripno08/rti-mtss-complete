@@ -113,9 +113,9 @@ export default function RtiSettingsPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Configurações RTI/MTSS</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Configurações Innerview</h1>
           <p className="text-muted-foreground">
-            Gerencie as configurações do sistema RTI/MTSS
+            Gerencie as configurações do sistema Innerview
           </p>
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function RtiSettingsPage() {
             <CardHeader>
               <CardTitle>Configurações Gerais</CardTitle>
               <CardDescription>
-                Defina as configurações básicas do sistema RTI/MTSS
+                Defina as configurações básicas do sistema Innerview
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

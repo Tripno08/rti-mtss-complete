@@ -96,7 +96,7 @@ export default function NewStudentPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Novo Estudante</h1>
           <p className="text-muted-foreground">
-            Adicione um novo estudante ao sistema RTI/MTSS
+            Adicione um novo estudante ao sistema Innerview
           </p>
         </div>
       </div>

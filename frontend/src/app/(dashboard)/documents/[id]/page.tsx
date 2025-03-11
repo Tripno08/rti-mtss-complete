@@ -77,7 +77,7 @@ export default function DocumentDetailsPage({ params }: PageProps) {
             title: 'Formulário de Avaliação Inicial',
             type: 'form',
             category: 'Avaliação',
-            description: 'Formulário padrão para avaliação inicial de estudantes no programa RTI/MTSS. Inclui seções para avaliação acadêmica, comportamental e social.',
+            description: 'Formulário padrão para avaliação inicial de estudantes no programa Innerview. Inclui seções para avaliação acadêmica, comportamental e social.',
             createdAt: '2024-02-15T10:00:00',
             updatedAt: '2024-02-15T10:00:00',
             author: 'Maria Santos',

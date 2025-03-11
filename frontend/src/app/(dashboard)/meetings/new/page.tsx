@@ -100,7 +100,7 @@ export default function NewMeetingPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Nova Reunião</h1>
           <p className="text-muted-foreground">
-            Agende uma nova reunião no sistema RTI/MTSS
+            Agende uma nova reunião no sistema Innerview
           </p>
         </div>
       </div>

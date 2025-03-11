@@ -2,7 +2,7 @@
  * Módulo de Análise Avançada de Dados
  * 
  * Este módulo fornece componentes e utilitários para análise de dados
- * no sistema RTI/MTSS, incluindo análise preditiva, comparativa,
+ * no sistema Innerview, incluindo análise preditiva, comparativa,
  * de tendências e recomendações baseadas em dados.
  */
 

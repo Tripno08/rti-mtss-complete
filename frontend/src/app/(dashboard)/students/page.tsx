@@ -149,7 +149,7 @@ export default function StudentsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Estudantes</h1>
           <p className="text-muted-foreground">
-            Gerencie os estudantes do sistema RTI/MTSS
+            Gerencie os estudantes do sistema Innerview
           </p>
         </div>
         <Button onClick={() => router.push('/students/new')}>

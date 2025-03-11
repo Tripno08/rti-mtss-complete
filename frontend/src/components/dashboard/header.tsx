@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, LogOut, User, Settings } from 'lucide-react';
+import { Menu, LogOut, User, Settings, Bell, Search, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -16,10 +16,17 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Sidebar } from './sidebar';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { useSidebarContext } from '@/providers/sidebar-provider';
 
 export function Header() {
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { toggleSidebar, isMobile } = useSidebarContext();
 
   const handleSignOut = () => {
     logout();
@@ -51,79 +58,157 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 h-16 border-b bg-background flex items-center px-4">
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0">
-              <Sidebar />
-            </SheetContent>
-          </Sheet>
-          
-          <Link href="/dashboard" className="flex items-center ml-2 md:ml-0">
-            <span className="font-bold text-xl">RTI/MTSS</span>
-          </Link>
+    <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-stroke bg-white px-4 py-5 shadow-sm dark:border-stroke-dark dark:bg-gray-dark md:px-6 lg:px-8">
+      <div className="flex items-center">
+        {isMobile && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="mr-2 rounded-lg border px-1.5 py-1 dark:border-stroke-dark dark:bg-gray-dark hover:bg-innerview-light dark:hover:bg-innerview-dark/10 lg:hidden"
+            onClick={toggleSidebar}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Menu</span>
+          </Button>
+        )}
+        
+        <div className="hidden lg:block">
+          <h1 className="mb-0.5 text-xl font-bold text-innerview-secondary dark:text-white">
+            Dashboard
+          </h1>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Sistema de visualização interna de dados educacionais</p>
         </div>
+      </div>
 
-        {user && (
-          <div className="relative">
+      <div className="flex items-center gap-3">
+        {/* Botão de pesquisa */}
+        <div className="relative">
+          {isSearchOpen ? (
+            <div className="absolute -left-64 top-0 flex w-72 items-center rounded-lg border bg-white dark:border-gray-700 dark:bg-gray-800">
+              <Input 
+                type="text" 
+                placeholder="Pesquisar..." 
+                className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                autoFocus
+                onBlur={() => setIsSearchOpen(false)}
+              />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="mr-1"
+                onClick={() => setIsSearchOpen(false)}
+              >
+                <Search className="h-5 w-5 text-gray-500" />
+              </Button>
+            </div>
+          ) : (
             <Button 
               variant="ghost" 
-              className="relative h-8 w-8 rounded-full"
-              onClick={() => {
-                const menu = document.getElementById('user-menu');
-                if (menu) {
-                  menu.classList.toggle('hidden');
-                }
-              }}
+              size="icon" 
+              className="rounded-full hover:bg-innerview-light dark:hover:bg-innerview-dark/10"
+              onClick={() => setIsSearchOpen(true)}
             >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="" alt={user.name || ''} />
-                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-              </Avatar>
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Pesquisar</span>
             </Button>
-            
-            <div 
-              id="user-menu" 
-              className="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-background ring-1 ring-border ring-opacity-5 divide-y divide-border focus:outline-none z-50"
+          )}
+        </div>
+
+        {/* Alternador de tema */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="rounded-full hover:bg-innerview-light dark:hover:bg-innerview-dark/10"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+          <span className="sr-only">Alternar tema</span>
+        </Button>
+
+        {/* Notificações */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative rounded-full hover:bg-innerview-light dark:hover:bg-innerview-dark/10"
             >
+              <Bell className="h-5 w-5" />
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-innerview-primary text-[10px] font-medium text-white">
+                3
+              </span>
+              <span className="sr-only">Notificações</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>Notificações</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <div className="max-h-80 overflow-y-auto">
+              {[1, 2, 3].map((item) => (
+                <DropdownMenuItem key={item} className="flex cursor-pointer flex-col items-start p-4">
+                  <div className="flex w-full items-center justify-between">
+                    <p className="font-medium">Nova mensagem</p>
+                    <span className="text-xs text-gray-500">há 5 min</span>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Você recebeu uma nova mensagem do professor João.
+                  </p>
+                </DropdownMenuItem>
+              ))}
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer justify-center p-2 text-center font-medium text-innerview-primary">
+              Ver todas as notificações
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Perfil do usuário */}
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="relative h-8 w-8 rounded-full"
+              >
+                <Avatar className="h-8 w-8 border border-innerview-light">
+                  <AvatarImage src="" alt={user.name || ''} />
+                  <AvatarFallback className="bg-innerview-primary text-white">{getInitials(user.name)}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
               <div className="px-4 py-3">
-                <p className="text-sm font-medium text-foreground">{user.name}</p>
+                <p className="text-sm font-medium">{user.name}</p>
                 <p className="text-xs text-muted-foreground">{getRoleLabel(user.role)}</p>
               </div>
-              <div className="py-1">
-                <Link 
-                  href="/profile" 
-                  className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent"
-                >
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/profile" className="flex cursor-pointer items-center">
                   <User className="mr-2 h-4 w-4" />
                   <span>Meu Perfil</span>
                 </Link>
-                <Link 
-                  href="/settings" 
-                  className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent"
-                >
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/settings" className="flex cursor-pointer items-center">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Configurações</span>
                 </Link>
-              </div>
-              <div className="py-1">
-                <button
-                  onClick={handleSignOut}
-                  className="flex w-full items-center px-4 py-2 text-sm text-destructive hover:bg-accent"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sair</span>
-                </button>
-              </div>
-            </div>
-          </div>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={handleSignOut}
+                className="flex cursor-pointer items-center text-destructive focus:text-destructive"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </header>

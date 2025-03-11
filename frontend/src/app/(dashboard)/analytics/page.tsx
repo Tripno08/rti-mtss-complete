@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Análise de Dados</h1>
           <p className="text-muted-foreground">
-            Visualize métricas e tendências do sistema RTI/MTSS
+            Visualize métricas e tendências do sistema Innerview
           </p>
         </div>
         <div className="flex gap-2">

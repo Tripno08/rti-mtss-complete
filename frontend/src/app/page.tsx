@@ -8,9 +8,9 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-4">Bem-vindo ao RTI/MTSS System</h1>
+        <h1 className="text-4xl font-bold mb-4">Bem-vindo ao Innerview</h1>
         <p className="text-xl text-muted-foreground">
-          Sistema de Resposta à Intervenção e Suporte Multi-Níveis
+          Sistema de visualização interna de dados educacionais e Suporte Multi-Níveis
         </p>
       </div>
 
