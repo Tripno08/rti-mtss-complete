@@ -118,7 +118,7 @@ export default function ScreeningInstrumentsPage() {
   const filteredInstruments = instruments?.filter((instrument: ScreeningInstrument) => {
     const matchesSearch = instrument.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          instrument.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter ? instrument.categoria === categoryFilter : true;
+    const matchescategoryFilter = !categoryFilter || categoryFilter === "all-categoryFilters" || instrument.categoria === categoryFilter;
     const matchesActive = activeFilter === 'all' ? true : 
                          activeFilter === 'active' ? instrument.ativo : !instrument.ativo;
     return matchesSearch && matchesCategory && matchesActive;
@@ -183,7 +183,7 @@ export default function ScreeningInstrumentsPage() {
                   <SelectValue placeholder="Filtrar por categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as categorias</SelectItem>
+                  <SelectItem value="all-categories">Todas as categorias</SelectItem>
                   {Object.values(CategoriaInstrumento).map((category) => (
                     <SelectItem key={category} value={category}>
                       {formatCategoryName(category)}

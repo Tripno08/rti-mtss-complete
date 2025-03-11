@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -139,7 +140,15 @@ const formSchema = z.object({
   ),
 });
 
-export default function ScreeningResultsPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function ScreeningResultsPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('results');
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<string>('all');

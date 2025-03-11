@@ -185,7 +185,7 @@ export default function AssessmentsPage() {
                     <SelectValue placeholder="Filtrar por tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os tipos</SelectItem>
+                    <SelectItem value="all-types">Todos os tipos</SelectItem>
                     <SelectItem value="Leitura">Leitura</SelectItem>
                     <SelectItem value="Matemática">Matemática</SelectItem>
                     <SelectItem value="Comportamental">Comportamental</SelectItem>
@@ -196,7 +196,7 @@ export default function AssessmentsPage() {
                     <SelectValue placeholder="Filtrar por status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os status</SelectItem>
+                    <SelectItem value="all-statuses">Todos os status</SelectItem>
                     <SelectItem value="completed">Concluídas</SelectItem>
                     <SelectItem value="pending">Pendentes</SelectItem>
                     <SelectItem value="cancelled">Canceladas</SelectItem>

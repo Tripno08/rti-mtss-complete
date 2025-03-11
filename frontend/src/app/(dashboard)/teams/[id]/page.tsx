@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -94,7 +95,13 @@ interface TeamDashboard {
   recentReferrals: Referral[];
 }
 
-export default function TeamDetailsPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function TeamDetailsPage({ params }: PageProps) {
   const [dashboard, setDashboard] = useState<TeamDashboard | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);

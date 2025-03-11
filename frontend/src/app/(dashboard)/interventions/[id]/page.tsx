@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -24,7 +25,13 @@ interface Intervention {
   };
 }
 
-export default function InterventionDetailsPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function InterventionDetailsPage({ params }: PageProps) {
   const [intervention, setIntervention] = useState<Intervention | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();

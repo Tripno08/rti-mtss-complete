@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -63,7 +64,15 @@ const mockStudent = {
   notes: 'Apresenta dificuldades em leitura e compreensão textual.',
 } as const;
 
-export default function EditStudentPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function EditStudentPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

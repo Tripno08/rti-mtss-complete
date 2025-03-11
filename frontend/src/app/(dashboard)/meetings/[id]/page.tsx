@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -56,7 +57,15 @@ interface Meeting {
   minutes?: string;
 }
 
-export default function MeetingDetailsPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function MeetingDetailsPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +80,7 @@ export default function MeetingDetailsPage({ params }: { params: { id: string } 
         // Simulando uma chamada de API
         setTimeout(() => {
           const mockMeeting: Meeting = {
-            id: params.id,
+            id: unwrappedParams.id,
             title: 'Revisão do Plano de Intervenção - João Silva',
             date: '2024-02-25',
             time: '14:00',
@@ -114,7 +123,7 @@ export default function MeetingDetailsPage({ params }: { params: { id: string } 
     };
 
     fetchMeeting();
-  }, [params.id]);
+  }, [unwrappedParams.id]);
 
   const handleStatusChange = async (newStatus: 'completed' | 'cancelled') => {
     try {
@@ -146,7 +155,7 @@ export default function MeetingDetailsPage({ params }: { params: { id: string } 
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // TODO: Implementar a chamada real à API
-      console.log('Deletando reunião:', params.id);
+      console.log('Deletando reunião:', unwrappedParams.id);
       
       showToast({ type: 'success', message: 'Reunião excluída com sucesso!' });
       router.push('/meetings');
@@ -302,9 +311,11 @@ export default function MeetingDetailsPage({ params }: { params: { id: string } 
           </Button>
           <div>
             <h1 className="text-3xl font-bold">{meeting.title}</h1>
-            <p className="text-muted-foreground">
-              {formatDate(meeting.date)} • <Badge className={getStatusBadgeColor(meeting.status)}>{getStatusLabel(meeting.status)}</Badge>
-            </p>
+            <div className="flex items-center text-muted-foreground">
+              <span>{formatDate(meeting.date)}</span>
+              <span className="mx-2">•</span>
+              <Badge className={getStatusBadgeColor(meeting.status)}>{getStatusLabel(meeting.status)}</Badge>
+            </div>
           </div>
         </div>
         

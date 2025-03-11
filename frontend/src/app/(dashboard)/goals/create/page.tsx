@@ -141,7 +141,10 @@ const smartTips = {
       'Bom: "Até o final do semestre (dd/mm/aaaa)"',
     ],
   },
-};
+} as const;
+
+// Definindo um tipo para as chaves de smartTips
+type SmartTipKey = keyof typeof smartTips;
 
 export default function CreateGoalPage() {
   const router = useRouter();
@@ -238,7 +241,7 @@ export default function CreateGoalPage() {
                   ) : (
                     <AlertCircle className="h-4 w-4 mr-1" />
                   )}
-                  {smartTips[key].title}
+                  {smartTips[key as SmartTipKey].title}
                 </Badge>
               ))}
             </div>
@@ -359,7 +362,7 @@ export default function CreateGoalPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Nenhuma</SelectItem>
+                            <SelectItem value="none">Nenhuma</SelectItem>
                             {interventions.map((intervention) => (
                               <SelectItem key={intervention.id} value={intervention.id}>
                                 {intervention.nome}

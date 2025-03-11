@@ -1,1 +1,1 @@
-module.exports = { output: "standalone", reactStrictMode: true, swcMinify: true }
+module.exports = { output: "standalone", reactStrictMode: true }

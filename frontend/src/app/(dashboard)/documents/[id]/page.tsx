@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -51,7 +52,15 @@ interface Document {
   fileName: string;
 }
 
-export default function DocumentDetailsPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function DocumentDetailsPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [document, setDocument] = useState<Document | null>(null);
   const [isLoading, setIsLoading] = useState(true);

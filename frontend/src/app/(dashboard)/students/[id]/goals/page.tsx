@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { create } from 'zustand';
@@ -164,7 +165,15 @@ const useGoalsStore = create<GoalsStore>((set) => ({
   },
 }));
 
-export default function StudentGoalsPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function StudentGoalsPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('active');
 

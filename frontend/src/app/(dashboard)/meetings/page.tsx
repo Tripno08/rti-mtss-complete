@@ -205,7 +205,7 @@ export default function MeetingsPage() {
                     <SelectValue placeholder="Filtrar por tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os tipos</SelectItem>
+                    <SelectItem value="all-types">Todos os tipos</SelectItem>
                     <SelectItem value="Intervenção">Intervenção</SelectItem>
                     <SelectItem value="Avaliação">Avaliação</SelectItem>
                     <SelectItem value="Planejamento">Planejamento</SelectItem>
@@ -218,7 +218,7 @@ export default function MeetingsPage() {
                     <SelectValue placeholder="Filtrar por status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os status</SelectItem>
+                    <SelectItem value="all-statuses">Todos os status</SelectItem>
                     <SelectItem value="scheduled">Agendadas</SelectItem>
                     <SelectItem value="in_progress">Em Andamento</SelectItem>
                     <SelectItem value="completed">Concluídas</SelectItem>

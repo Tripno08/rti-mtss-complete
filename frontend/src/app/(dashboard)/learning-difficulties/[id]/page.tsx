@@ -35,9 +35,29 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import React from 'react';
+
+// Definindo o tipo de severidade
+type Severity = 'MILD' | 'MODERATE' | 'SEVERE';
+
+// Interface para dificuldade de aprendizagem
+interface LearningDifficulty {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  severity: Severity;
+  studentId: string;
+  student?: {
+    id: string;
+    name: string;
+    grade: string;
+  };
+  identifiedDate: string;
+}
 
 // Dados simulados
-const mockDifficulties = [
+const mockDifficulties: LearningDifficulty[] = [
   {
     id: '1',
     name: 'Dislexia',
@@ -50,8 +70,7 @@ const mockDifficulties = [
       name: 'João Silva',
       grade: '3º Ano'
     },
-    identifiedDate: '2025-01-15',
-    interventions: ['1']
+    identifiedDate: '2025-01-15'
   },
   {
     id: '2',
@@ -65,8 +84,7 @@ const mockDifficulties = [
       name: 'Ana Souza',
       grade: '2º Ano'
     },
-    identifiedDate: '2025-02-10',
-    interventions: ['2']
+    identifiedDate: '2025-02-10'
   },
   {
     id: '3',
@@ -80,8 +98,7 @@ const mockDifficulties = [
       name: 'Pedro Santos',
       grade: '4º Ano'
     },
-    identifiedDate: '2025-01-05',
-    interventions: ['3']
+    identifiedDate: '2025-01-05'
   },
   {
     id: '4',
@@ -95,8 +112,7 @@ const mockDifficulties = [
       name: 'Mariana Costa',
       grade: '1º Ano'
     },
-    identifiedDate: '2025-03-01',
-    interventions: ['4']
+    identifiedDate: '2025-03-01'
   }
 ];
 
@@ -118,9 +134,10 @@ const formSchema = z.object({
   category: z.string().min(1, {
     message: 'Selecione uma categoria.',
   }),
-  severity: z.enum(['MILD', 'MODERATE', 'SEVERE'], {
-    message: 'Selecione um nível de severidade.',
-  }),
+  severity: z.enum(['MILD', 'MODERATE', 'SEVERE'])
+    .refine(val => val, {
+      message: 'Selecione um nível de severidade.',
+    }),
   studentId: z.string().min(1, {
     message: 'Selecione um estudante.',
   }),
@@ -129,15 +146,22 @@ const formSchema = z.object({
   }),
 });
 
-export default function LearningDifficultyPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function LearningDifficultyPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
-  const { id } = params;
   const isNew = id === 'new';
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [difficulty, setDifficulty] = useState<any>(null);
+  const [difficulty, setDifficulty] = useState<LearningDifficulty | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -157,7 +181,7 @@ export default function LearningDifficultyPage({ params }: { params: { id: strin
     // Simular carregamento de dados
     setTimeout(() => {
       if (!isNew) {
-        const foundDifficulty = mockDifficulties.find(d => d.id === id);
+        const foundDifficulty = mockDifficulties.find((d: LearningDifficulty) => d.id === id);
         if (foundDifficulty) {
           setDifficulty(foundDifficulty);
           form.reset({

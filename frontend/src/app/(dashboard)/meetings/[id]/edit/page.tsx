@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -67,7 +68,15 @@ const mockMeeting = {
   agenda: 'Apresentação dos resultados das últimas avaliações\nAnálise do progresso nas intervenções atuais\nDiscussão sobre ajustes necessários no plano\nDefinição de próximos passos e responsabilidades',
 } as const;
 
-export default function EditMeetingPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function EditMeetingPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

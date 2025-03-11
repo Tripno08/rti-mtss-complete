@@ -166,9 +166,9 @@ export default function InterventionsLibraryPage() {
     const matchesSearch = 
       intervencao.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       intervencao.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter ? intervencao.categoria === categoryFilter : true;
-    const matchesRTI = rtiFilter ? intervencao.nivelRTI === rtiFilter : true;
-    const matchesEvidence = evidenceFilter ? intervencao.nivelEvidencia === evidenceFilter : true;
+    const matchescategoryFilter = !categoryFilter || categoryFilter === "all-categoryFilters" || intervencao.categoria === categoryFilter;
+    const matchesrtiFilter = !rtiFilter || rtiFilter === "all-rtiFilters" || intervencao.nivelRTI === rtiFilter;
+    const matchesevidenceFilter = !evidenceFilter || evidenceFilter === "all-evidenceFilters" || intervencao.nivelEvidencia === evidenceFilter;
     return matchesSearch && matchesCategory && matchesRTI && matchesEvidence;
   });
 
@@ -267,7 +267,7 @@ export default function InterventionsLibraryPage() {
                   <SelectValue placeholder="Categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as categorias</SelectItem>
+                  <SelectItem value="all-categories">Todas as categorias</SelectItem>
                   {Object.values(CategoriaIntervencao).map((category) => (
                     <SelectItem key={category} value={category}>
                       {formatCategoryName(category)}
@@ -285,7 +285,7 @@ export default function InterventionsLibraryPage() {
                   <SelectValue placeholder="Nível RTI" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os níveis</SelectItem>
+                  <SelectItem value="all-levels">Todos os níveis</SelectItem>
                   {Object.values(NivelRTI).map((level) => (
                     <SelectItem key={level} value={level}>
                       {formatRTILevel(level)}
