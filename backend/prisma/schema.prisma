@@ -35,6 +35,8 @@ model User {
   assignedReferrals  Referral[]       @relation("AssignedReferrals")
   createdReferrals   Referral[]       @relation("CreatedReferrals")
   notifications      Notification[]
+  rastreiosAplicados Screening[]
+  sessoesAplicadas   InterventionSession[]
   
   @@map("users")
 }
@@ -57,6 +59,8 @@ model Student {
   tutorCommunications TutorCommunication[]
   messages           InternalMessage[]
   referrals          Referral[]
+  dificuldades       EstudanteDificuldade[]
+  rastreios          Screening[]
   
   @@map("students")
 }
@@ -93,6 +97,11 @@ model Intervention {
   // Relacionamentos
   studentId     String
   student       Student   @relation(fields: [studentId], references: [id])
+  baseInterventionId String?
+  baseIntervention BaseIntervention? @relation(fields: [baseInterventionId], references: [id])
+  progressos     InterventionProgress[]
+  sessoes        InterventionSession[]
+  metas          Goal[]
   
   @@map("interventions")
 }
@@ -454,4 +463,387 @@ enum NotificationType {
   ASSESSMENT_ADDED
   INTERVENTION_UPDATED
   TEAM_INVITATION
+}
+
+// Enum para níveis de dificuldade de aprendizagem
+enum NivelDificuldade {
+  BAIXO
+  MODERADO
+  ALTO
+}
+
+// Enum para categorias de dificuldade de aprendizagem
+enum CategoriaDificuldade {
+  LEITURA
+  ESCRITA
+  MATEMATICA
+  ATENCAO
+  COMPORTAMENTO
+  COMUNICACAO
+  COORDENACAO_MOTORA
+  MEMORIA
+  ORGANIZACAO
+  OUTRO
+}
+
+// Modelo de Dificuldade de Aprendizagem
+model DificuldadeAprendizagem {
+  id            String    @id @default(uuid())
+  nome          String
+  descricao     String
+  sintomas      String
+  categoria     CategoriaDificuldade
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  estudanteDificuldades EstudanteDificuldade[]
+  
+  @@map("dificuldades_aprendizagem")
+}
+
+// Modelo de relação entre Estudante e Dificuldade de Aprendizagem
+model EstudanteDificuldade {
+  id                String    @id @default(uuid())
+  nivel             NivelDificuldade
+  dataIdentificacao DateTime  @default(now())
+  observacoes       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  estudanteId       String
+  estudante         Student   @relation(fields: [estudanteId], references: [id])
+  dificuldadeId     String
+  dificuldade       DificuldadeAprendizagem @relation(fields: [dificuldadeId], references: [id])
+  
+  @@map("estudante_dificuldades")
+}
+
+// Enum para categorias de instrumentos de rastreio
+enum CategoriaInstrumento {
+  ACADEMICO
+  COMPORTAMENTAL
+  SOCIOEMOCIONAL
+  COGNITIVO
+  LINGUAGEM
+  MOTOR
+  ATENCAO
+  OUTRO
+}
+
+// Modelo de Instrumento de Rastreio
+model ScreeningInstrument {
+  id            String    @id @default(uuid())
+  nome          String
+  descricao     String
+  categoria     CategoriaInstrumento
+  faixaEtaria   String    // Ex: "6-8 anos", "9-12 anos"
+  tempoAplicacao String    // Ex: "15-20 minutos"
+  instrucoes    String    @db.Text
+  ativo         Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  indicadores   ScreeningIndicator[]
+  rastreios     Screening[]
+  
+  @@map("screening_instruments")
+}
+
+// Enum para tipos de indicador de rastreio
+enum TipoIndicador {
+  ESCALA_LIKERT
+  SIM_NAO
+  NUMERICO
+  MULTIPLA_ESCOLHA
+  TEXTO_LIVRE
+}
+
+// Modelo de Indicador de Rastreio
+model ScreeningIndicator {
+  id            String    @id @default(uuid())
+  nome          String
+  descricao     String
+  tipo          TipoIndicador
+  valorMinimo   Float
+  valorMaximo   Float
+  pontoCorte    Float     // Valor que indica necessidade de intervenção
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  instrumentoId String
+  instrumento   ScreeningInstrument @relation(fields: [instrumentoId], references: [id])
+  resultados    ScreeningResult[]
+  
+  @@map("screening_indicators")
+}
+
+// Enum para status do rastreio
+enum StatusRastreio {
+  AGENDADO
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+}
+
+// Enum para níveis de risco
+enum NivelRisco {
+  BAIXO
+  MODERADO
+  ALTO
+  MUITO_ALTO
+}
+
+// Modelo de Rastreio
+model Screening {
+  id            String    @id @default(uuid())
+  dataAplicacao DateTime
+  observacoes   String?   @db.Text
+  status        StatusRastreio @default(EM_ANDAMENTO)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  estudanteId   String
+  estudante     Student   @relation(fields: [estudanteId], references: [id])
+  aplicadorId   String
+  aplicador     User      @relation(fields: [aplicadorId], references: [id])
+  instrumentoId String
+  instrumento   ScreeningInstrument @relation(fields: [instrumentoId], references: [id])
+  resultados    ScreeningResult[]
+  
+  @@map("screenings")
+}
+
+// Modelo de Resultado de Rastreio
+model ScreeningResult {
+  id            String    @id @default(uuid())
+  valor         Float
+  nivelRisco    NivelRisco?
+  observacoes   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  rastreioId    String
+  rastreio      Screening @relation(fields: [rastreioId], references: [id])
+  indicadorId   String
+  indicador     ScreeningIndicator @relation(fields: [indicadorId], references: [id])
+  
+  @@map("screening_results")
+}
+
+// Enum para níveis de intervenção
+enum NivelIntervencao {
+  UNIVERSAL
+  SELETIVO
+  INTENSIVO
+}
+
+// Enum para áreas de intervenção
+enum AreaIntervencao {
+  LEITURA
+  ESCRITA
+  MATEMATICA
+  COMPORTAMENTO
+  ATENCAO
+  SOCIOEMOCIONAL
+  LINGUAGEM
+  OUTRO
+}
+
+// Enum para frequência de aplicação
+enum FrequenciaAplicacao {
+  DIARIA
+  SEMANAL
+  QUINZENAL
+  MENSAL
+  PERSONALIZADA
+}
+
+// Modelo de Intervenção Base (Catálogo)
+model BaseIntervention {
+  id                String    @id @default(uuid())
+  nome              String
+  descricao         String
+  objetivo          String
+  nivel             NivelIntervencao
+  area              AreaIntervencao
+  tempoEstimado     String    // Ex: "30 minutos", "1 hora"
+  frequencia        FrequenciaAplicacao
+  materiaisNecessarios String?
+  evidenciaCientifica String?
+  fonteEvidencia    String?
+  ativo             Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  protocolos        InterventionProtocol[]
+  intervencoes      Intervention[]
+  kpis              InterventionKpi[]
+  
+  @@map("base_interventions")
+}
+
+// Modelo de Protocolo de Intervenção
+model InterventionProtocol {
+  id                String    @id @default(uuid())
+  nome              String
+  descricao         String
+  duracaoEstimada   String    // Ex: "6 semanas", "3 meses"
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  baseInterventionId String
+  baseIntervention   BaseIntervention @relation(fields: [baseInterventionId], references: [id])
+  etapas             ProtocolStep[]
+  
+  @@map("intervention_protocols")
+}
+
+// Modelo de Etapa do Protocolo
+model ProtocolStep {
+  id                String    @id @default(uuid())
+  ordem             Int
+  titulo            String
+  descricao         String
+  tempoEstimado     String    // Ex: "15 minutos"
+  materiaisNecessarios String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  protocoloId       String
+  protocolo         InterventionProtocol @relation(fields: [protocoloId], references: [id])
+  
+  @@map("protocol_steps")
+}
+
+// Modelo de KPI de Intervenção
+model InterventionKpi {
+  id                String    @id @default(uuid())
+  nome              String
+  descricao         String
+  unidadeMedida     String    // Ex: "pontos", "percentual"
+  valorMinimo       Float?
+  valorMaximo       Float?
+  valorAlvo         Float?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  baseInterventionId String
+  baseIntervention   BaseIntervention @relation(fields: [baseInterventionId], references: [id])
+  progressos         InterventionProgress[]
+  resultados         KpiResult[]
+  
+  @@map("intervention_kpis")
+}
+
+// Modelo de Progresso de Intervenção
+model InterventionProgress {
+  id                String    @id @default(uuid())
+  data              DateTime
+  observacoes       String?
+  valorKpi          Float?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  interventionId    String
+  intervention      Intervention @relation(fields: [interventionId], references: [id])
+  kpiId             String?
+  kpi               InterventionKpi? @relation(fields: [kpiId], references: [id])
+  
+  @@map("intervention_progress")
+}
+
+// Enum para status de sessão
+enum StatusSessao {
+  AGENDADA
+  REALIZADA
+  CANCELADA
+  REMARCADA
+}
+
+// Enum para tipo de meta
+enum TipoMeta {
+  ACADEMICA
+  COMPORTAMENTAL
+  SOCIOEMOCIONAL
+  COGNITIVA
+  LINGUAGEM
+  MOTORA
+  ATENCAO
+  OUTRA
+}
+
+// Modelo de Sessão de Intervenção
+model InterventionSession {
+  id                String    @id @default(uuid())
+  data              DateTime
+  duracao           Int       // Duração em minutos
+  status            StatusSessao @default(AGENDADA)
+  observacoes       String?
+  materiaisUtilizados String?
+  desafiosEncontrados String?
+  proximosPassos    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  interventionId    String
+  intervention      Intervention @relation(fields: [interventionId], references: [id])
+  aplicadorId       String
+  aplicador         User      @relation(fields: [aplicadorId], references: [id])
+  kpiResults        KpiResult[]
+  
+  @@map("intervention_sessions")
+}
+
+// Modelo de Resultado de KPI
+model KpiResult {
+  id                String    @id @default(uuid())
+  valor             Float
+  observacoes       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  sessionId         String
+  session           InterventionSession @relation(fields: [sessionId], references: [id])
+  kpiId             String
+  kpi               InterventionKpi @relation(fields: [kpiId], references: [id])
+  
+  @@map("kpi_results")
+}
+
+// Modelo de Meta SMART
+model Goal {
+  id                String    @id @default(uuid())
+  titulo            String
+  descricao         String
+  tipo              TipoMeta
+  especifico        String    // Specific
+  mensuravel        String    // Measurable
+  atingivel         String    // Achievable
+  relevante         String    // Relevant
+  temporal          String    // Time-bound
+  dataInicio        DateTime
+  dataFim           DateTime
+  status            Boolean   @default(false) // false = não atingida, true = atingida
+  observacoes       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  interventionId    String
+  intervention      Intervention @relation(fields: [interventionId], references: [id])
+  
+  @@map("goals")
 }

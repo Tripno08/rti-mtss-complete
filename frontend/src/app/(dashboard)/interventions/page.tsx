@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/utils/api';
+import { Loader2 } from 'lucide-react';
 
 interface Intervention {
   id: string;
@@ -24,25 +25,86 @@ interface Intervention {
   };
 }
 
+// Dados simulados para desenvolvimento
+const mockInterventions: Intervention[] = [
+  {
+    id: '1',
+    startDate: '2025-03-01',
+    endDate: '2025-04-01',
+    type: 'Reforço de Leitura',
+    description: 'Sessões de reforço em leitura e compreensão textual',
+    status: 'ACTIVE',
+    notes: 'O aluno está progredindo bem',
+    studentId: '1',
+    student: {
+      id: '1',
+      name: 'João Silva',
+      grade: '3º Ano'
+    }
+  },
+  {
+    id: '2',
+    startDate: '2025-02-15',
+    endDate: '2025-03-15',
+    type: 'Apoio em Matemática',
+    description: 'Atividades de reforço em operações matemáticas básicas',
+    status: 'COMPLETED',
+    notes: 'Intervenção concluída com sucesso',
+    studentId: '2',
+    student: {
+      id: '2',
+      name: 'Ana Souza',
+      grade: '2º Ano'
+    }
+  },
+  {
+    id: '3',
+    startDate: '2025-03-10',
+    type: 'Suporte Comportamental',
+    description: 'Sessões de orientação para melhorar comportamento em sala',
+    status: 'ACTIVE',
+    studentId: '3',
+    student: {
+      id: '3',
+      name: 'Pedro Santos',
+      grade: '4º Ano'
+    }
+  },
+  {
+    id: '4',
+    startDate: '2025-01-20',
+    endDate: '2025-02-20',
+    type: 'Apoio em Escrita',
+    description: 'Atividades para desenvolvimento da escrita',
+    status: 'CANCELLED',
+    notes: 'Cancelada a pedido dos pais',
+    studentId: '4',
+    student: {
+      id: '4',
+      name: 'Mariana Costa',
+      grade: '1º Ano'
+    }
+  }
+];
+
 export default function InterventionsPage() {
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchInterventions = async () => {
-      try {
-        const response = await api.get('/interventions');
-        setInterventions(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar intervenções:', error);
-        toast.error('Erro ao carregar a lista de intervenções.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchInterventions();
+    setIsClient(true);
+    // Carregar dados simulados
+    try {
+      setInterventions(mockInterventions);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Erro ao carregar dados simulados:', error);
+      setIsError(true);
+      setIsLoading(false);
+    }
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -51,7 +113,7 @@ export default function InterventionsPage() {
     }
 
     try {
-      await api.delete(`/interventions/${id}`);
+      // Simulação de exclusão
       setInterventions(interventions.filter((intervention) => intervention.id !== id));
       toast.success('Intervenção excluída com sucesso!');
     } catch (error) {
@@ -95,6 +157,33 @@ export default function InterventionsPage() {
     }
   };
 
+  // Se não estamos no cliente, renderizar um placeholder
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando...</span>
+      </div>
+    );
+  }
+
+  // Se ocorreu um erro
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight">Intervenções</h1>
+          <Button onClick={() => router.push('/interventions/new')}>Nova Intervenção</Button>
+        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-red-500">Erro ao carregar intervenções. Tente novamente mais tarde.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -104,7 +193,8 @@ export default function InterventionsPage() {
 
       {isLoading ? (
         <div className="flex justify-center">
-          <p>Carregando...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2">Carregando...</span>
         </div>
       ) : interventions.length === 0 ? (
         <Card>

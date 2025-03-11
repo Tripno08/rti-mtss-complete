@@ -12,6 +12,10 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
+import { DificuldadesAprendizagemModule } from './modules/dificuldades-aprendizagem/dificuldades-aprendizagem.module';
+import { ScreeningInstrumentsModule } from './modules/screening-instruments/screening-instruments.module';
+import { ScreeningsModule } from './modules/screenings/screenings.module';
+import { ScreeningResultsModule } from './modules/screening-results/screening-results.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 
 @Module({
@@ -29,6 +33,10 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     IntegrationsModule,
     TeamsModule,
     MeetingsModule,
+    DificuldadesAprendizagemModule,
+    ScreeningInstrumentsModule,
+    ScreeningsModule,
+    ScreeningResultsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

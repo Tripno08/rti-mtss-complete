@@ -1,30 +1,35 @@
-FROM node:18-alpine
+FROM node:18-slim
 
 WORKDIR /app
 
-COPY package*.json ./
+# Instalar dependências necessárias
+RUN apt-get update && apt-get install -y \
+    openssl \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN npm install
-
+# Copiar arquivos do projeto
 COPY . .
 
-# Gerar Prisma Client com os targets corretos
+# Instalar dependências
+RUN npm install
+
+# Gerar Prisma Client
 RUN npx prisma generate
 
-# Instalar netcat para verificação de conexão
-RUN apk add --no-cache netcat-openbsd
+# Criar diretório dist manualmente
+RUN mkdir -p dist
 
-# Criar diretório dist com permissões corretas
-RUN mkdir -p dist && chown node:node dist
+# Copiar arquivos de origem para dist
+RUN cp -r src/* dist/
+
+# Configurar permissões corretas
+RUN chmod -R 777 /app/node_modules/.prisma
+
+# Configurar usuário não-root
+USER node
 
 EXPOSE 3001
 
-USER node
-
-CMD sh -c 'echo "Aguardando MySQL iniciar..." && \
-          while ! nc -z mysql 3306; do \
-            sleep 1; \
-          done && \
-          echo "MySQL está pronto!" && \
-          rm -rf dist/* || true && \
-          exec npm run start:dev' 
+# Script para aguardar MySQL e iniciar a aplicação
+CMD sh -c 'while ! nc -z mysql 3306; do sleep 1; done && npx prisma generate && npm run start:prod' 

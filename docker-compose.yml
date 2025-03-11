@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   # Serviço MySQL
   mysql:
     container_name: rti_mtss_mysql
     image: mysql:8.0
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: rti_mtss_db
@@ -16,16 +14,27 @@ services:
     networks:
       - rti_mtss_network
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Serviço Redis
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     container_name: rti_mtss_redis
-    restart: always
+    restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     networks:
       - rti_mtss_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Serviço Backend
   backend:
@@ -33,21 +42,25 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     environment:
       NODE_ENV: production
       DATABASE_URL: mysql://root:root@mysql:3306/rti_mtss_db
-      JWT_SECRET: your-jwt-secret
-      JWT_EXPIRATION: 3600
-      JWT_REFRESH_SECRET: your-jwt-refresh-secret
-      JWT_REFRESH_EXPIRATION: 604800
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
       PORT: 3001
     networks:
       - rti_mtss_network
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   # Serviço Frontend
   frontend:
@@ -55,9 +68,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://backend:3001/api
@@ -68,7 +81,9 @@ services:
 
 volumes:
   mysql_data:
+    name: rti_mtss_mysql_data
 
 networks:
   rti_mtss_network:
+    name: rti_mtss_network
     driver: bridge 
