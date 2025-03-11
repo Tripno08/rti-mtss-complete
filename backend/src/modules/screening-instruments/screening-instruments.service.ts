@@ -225,4 +225,28 @@ export class ScreeningInstrumentsService {
 
     return { message: 'Indicador de rastreio removido com sucesso' };
   }
+
+  async findAll() {
+    try {
+      // Implementação básica - pode ser expandida conforme necessário
+      return {
+        message: 'Lista de instrumentos de rastreio recuperada com sucesso',
+        data: [],
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findOne(id: string) {
+    try {
+      // Implementação básica - pode ser expandida conforme necessário
+      return {
+        message: 'Detalhes do instrumento de rastreio recuperados com sucesso',
+        data: { id },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 } 

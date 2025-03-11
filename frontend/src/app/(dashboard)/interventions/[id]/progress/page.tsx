@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { create } from 'zustand';
@@ -212,7 +213,15 @@ const sessionFormSchema = z.object({
   })),
 });
 
-export default function InterventionProgressPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function InterventionProgressPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
 

@@ -236,7 +236,7 @@ export default function DocumentsPage() {
                     <SelectValue placeholder="Filtrar por tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os tipos</SelectItem>
+                    <SelectItem value="all-types">Todos os tipos</SelectItem>
                     <SelectItem value="form">Formulários</SelectItem>
                     <SelectItem value="report">Relatórios</SelectItem>
                     <SelectItem value="plan">Planos</SelectItem>
@@ -248,7 +248,7 @@ export default function DocumentsPage() {
                     <SelectValue placeholder="Filtrar por status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os status</SelectItem>
+                    <SelectItem value="all-statuses">Todos os status</SelectItem>
                     <SelectItem value="published">Publicados</SelectItem>
                     <SelectItem value="draft">Rascunhos</SelectItem>
                     <SelectItem value="archived">Arquivados</SelectItem>

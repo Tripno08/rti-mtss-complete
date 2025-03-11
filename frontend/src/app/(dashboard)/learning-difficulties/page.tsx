@@ -175,7 +175,7 @@ export default function LearningDifficultiesPage() {
       difficulty.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       difficulty.student?.name.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = categoryFilter ? difficulty.category === categoryFilter : true;
+    const matchesCategory = !categoryFilter || categoryFilter === 'all' || difficulty.category === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -239,7 +239,7 @@ export default function LearningDifficultiesPage() {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as categorias</SelectItem>
+              <SelectItem value="all">Todas as categorias</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}

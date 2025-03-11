@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { create } from 'zustand';
@@ -171,7 +172,15 @@ const formSchema = z.object({
   })).min(1, "Adicione pelo menos uma meta"),
 });
 
-export default function PlanInterventionPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function PlanInterventionPage({ params }: PageProps) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
   const router = useRouter();
   const [goals, setGoals] = useState<{ id: string; descricao: string; criterioSucesso: string; prazo: string }[]>([]);
 

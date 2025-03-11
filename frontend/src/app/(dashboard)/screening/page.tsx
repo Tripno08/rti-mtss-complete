@@ -326,15 +326,15 @@ export default function ScreeningPage() {
     const matchesSearch = 
       screening.estudante.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       screening.instrumento.nome.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter ? screening.status === statusFilter : true;
+    const matchesstatusFilter = !statusFilter || statusFilter === "all-statuses" || screening.status === statusFilter;
     
     // Filtrar por tab
-    if (activeTab === 'all') return matchesSearch && matchesStatus;
-    if (activeTab === 'pending') return matchesSearch && matchesStatus && screening.status === StatusRastreio.AGENDADO;
-    if (activeTab === 'in-progress') return matchesSearch && matchesStatus && screening.status === StatusRastreio.EM_ANDAMENTO;
-    if (activeTab === 'completed') return matchesSearch && matchesStatus && screening.status === StatusRastreio.CONCLUIDO;
+    if (activeTab === 'all') return matchesSearch && matchesstatusFilter;
+    if (activeTab === 'pending') return matchesSearch && matchesstatusFilter && screening.status === StatusRastreio.AGENDADO;
+    if (activeTab === 'in-progress') return matchesSearch && matchesstatusFilter && screening.status === StatusRastreio.EM_ANDAMENTO;
+    if (activeTab === 'completed') return matchesSearch && matchesstatusFilter && screening.status === StatusRastreio.CONCLUIDO;
     
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesstatusFilter;
   });
 
   // Função para obter a cor do badge de status
@@ -432,7 +432,7 @@ export default function ScreeningPage() {
                       <SelectValue placeholder="Filtrar por status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos os status</SelectItem>
+                      <SelectItem value="all-statuses">Todos os status</SelectItem>
                       {Object.values(StatusRastreio).map((status) => (
                         <SelectItem key={status} value={status}>
                           {formatStatusName(status)}

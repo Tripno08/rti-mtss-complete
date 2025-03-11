@@ -185,7 +185,7 @@ export default function StudentsPage() {
                     <SelectValue placeholder="Filtrar por série" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas as séries</SelectItem>
+                    <SelectItem value="all-grades">Todas as séries</SelectItem>
                     <SelectItem value="2º Ano">2º Ano</SelectItem>
                     <SelectItem value="3º Ano">3º Ano</SelectItem>
                     <SelectItem value="4º Ano">4º Ano</SelectItem>
@@ -197,7 +197,7 @@ export default function StudentsPage() {
                     <SelectValue placeholder="Filtrar por risco" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os níveis</SelectItem>
+                    <SelectItem value="all-levels">Todos os níveis</SelectItem>
                     <SelectItem value="high">Alto Risco</SelectItem>
                     <SelectItem value="medium">Médio Risco</SelectItem>
                     <SelectItem value="low">Baixo Risco</SelectItem>
