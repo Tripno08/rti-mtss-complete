@@ -216,7 +216,7 @@ export default function NewInterventionPage() {
                           </SelectTrigger>
                           <SelectContent>
                             {students.length === 0 ? (
-                              <SelectItem value="" disabled>
+                              <SelectItem value="all-types" disabled>
                                 Nenhum aluno encontrado
                               </SelectItem>
                             ) : (

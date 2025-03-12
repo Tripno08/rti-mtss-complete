@@ -200,7 +200,7 @@ export default function DocumentsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Documentos</h1>
           <p className="text-muted-foreground">
-            Gerencie os documentos do sistema RTI/MTSS
+            Gerencie os documentos do sistema Innerview
           </p>
         </div>
         <Button onClick={() => router.push('/documents/new')}>

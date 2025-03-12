@@ -98,7 +98,7 @@ export default function NewAssessmentPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Nova Avaliação</h1>
           <p className="text-muted-foreground">
-            Adicione uma nova avaliação ao sistema RTI/MTSS
+            Adicione uma nova avaliação ao sistema Innerview
           </p>
         </div>
       </div>

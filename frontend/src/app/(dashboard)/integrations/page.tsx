@@ -415,7 +415,7 @@ export default function IntegrationsPage() {
             <CardContent>
               <div className="space-y-4">
                 <p>
-                  A integração LTI permite conectar o sistema RTI/MTSS com diversos LMS:
+                  A integração LTI permite conectar o sistema Innerview com diversos LMS:
                 </p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li>Canvas</li>

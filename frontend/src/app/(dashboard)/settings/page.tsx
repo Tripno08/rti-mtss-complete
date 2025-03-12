@@ -174,7 +174,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
         <p className="text-muted-foreground">
-          Gerencie as configurações do sistema RTI/MTSS
+          Gerencie as configurações do sistema Innerview
         </p>
       </div>
 

@@ -61,6 +61,8 @@ interface PageProps {
 }
 
 export default function EditInterventionPage({ params }: PageProps) {
+  const resolvedParams = React.use(params);
+  const id = resolvedParams.id;
   const [intervention, setIntervention] = useState<Intervention | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +85,7 @@ export default function EditInterventionPage({ params }: PageProps) {
     const fetchData = async () => {
       try {
         const [interventionResponse, studentsResponse] = await Promise.all([
-          api.get(`/interventions/${params.id}`),
+          api.get(`/interventions/${id}`),
           api.get('/students'),
         ]);
 
@@ -115,7 +117,7 @@ export default function EditInterventionPage({ params }: PageProps) {
     };
 
     fetchData();
-  }, [params.id, form]);
+  }, [id, form]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -125,9 +127,9 @@ export default function EditInterventionPage({ params }: PageProps) {
         endDate: data.endDate && data.endDate.trim() !== '' ? data.endDate : undefined,
       };
 
-      await api.patch(`/interventions/${params.id}`, formattedData);
+      await api.patch(`/interventions/${id}`, formattedData);
       toast.success('Intervenção atualizada com sucesso!');
-      router.push(`/interventions/${params.id}`);
+      router.push(`/interventions/${id}`);
     } catch (error) {
       console.error('Erro ao atualizar intervenção:', error);
       toast.error('Erro ao atualizar intervenção.');
@@ -159,7 +161,7 @@ export default function EditInterventionPage({ params }: PageProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Editar Intervenção</h1>
-        <Button variant="outline" onClick={() => router.push(`/interventions/${params.id}`)}>
+        <Button variant="outline" onClick={() => router.push(`/interventions/${id}`)}>
           Cancelar
         </Button>
       </div>

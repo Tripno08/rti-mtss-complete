@@ -19,6 +19,8 @@ import { ScreeningInstrumentsModule } from './modules/screening-instruments/scre
 import { ScreeningsModule } from './modules/screenings/screenings.module';
 import { ScreeningResultsModule } from './modules/screening-results/screening-results.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { BaseInterventionsModule } from './modules/base-interventions/base-interventions.module';
+import { InterventionProtocolsModule } from './modules/intervention-protocols/intervention-protocols.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     ScreeningInstrumentsModule,
     ScreeningsModule,
     ScreeningResultsModule,
+    BaseInterventionsModule,
+    InterventionProtocolsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

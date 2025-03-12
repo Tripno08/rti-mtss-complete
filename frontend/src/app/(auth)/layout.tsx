@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { AuthLayoutClient } from './auth-layout-client';
 
 export const metadata: Metadata = {
-  title: 'Autenticação | RTI/MTSS System',
-  description: 'Sistema de Resposta à Intervenção/Sistema de Suporte Multi-Nível',
+  title: 'Autenticação | Innerview',
+  description: 'Sistema de visualização interna de dados educacionais e suporte multi-níveis',
 };
 
 export default function AuthLayout({

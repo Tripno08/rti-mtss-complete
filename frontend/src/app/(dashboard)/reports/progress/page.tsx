@@ -75,7 +75,7 @@ export default function ProgressReportPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Relatório de Progresso</h1>
             <p className="text-muted-foreground">
-              Análise detalhada do progresso dos estudantes no programa RTI/MTSS
+              Análise detalhada do progresso dos estudantes no programa Innerview
             </p>
           </div>
         </div>

@@ -32,6 +32,8 @@ interface PageProps {
 }
 
 export default function InterventionDetailsPage({ params }: PageProps) {
+  const resolvedParams = React.use(params);
+  const id = resolvedParams.id;
   const [intervention, setIntervention] = useState<Intervention | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -39,7 +41,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
   useEffect(() => {
     const fetchIntervention = async () => {
       try {
-        const response = await api.get(`/interventions/${params.id}`);
+        const response = await api.get(`/interventions/${id}`);
         setIntervention(response.data);
       } catch (error) {
         console.error('Erro ao buscar detalhes da intervenção:', error);
@@ -50,7 +52,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
     };
 
     fetchIntervention();
-  }, [params.id]);
+  }, [id]);
 
   const handleDelete = async () => {
     if (!confirm('Tem certeza que deseja excluir esta intervenção?')) {
@@ -58,7 +60,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
     }
 
     try {
-      await api.delete(`/interventions/${params.id}`);
+      await api.delete(`/interventions/${id}`);
       toast.success('Intervenção excluída com sucesso!');
       router.push('/interventions');
     } catch (error) {
@@ -69,7 +71,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
 
   const handleStatusChange = async (newStatus: 'ACTIVE' | 'COMPLETED' | 'CANCELLED') => {
     try {
-      const response = await api.patch(`/interventions/${params.id}`, { status: newStatus });
+      const response = await api.patch(`/interventions/${id}`, { status: newStatus });
       setIntervention(response.data);
       toast.success('Status da intervenção atualizado com sucesso!');
     } catch (error) {
@@ -144,7 +146,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
           </Button>
           <Button 
             variant="outline" 
-            onClick={() => router.push(`/interventions/${params.id}/edit`)}
+            onClick={() => router.push(`/interventions/${id}/edit`)}
           >
             Editar
           </Button>

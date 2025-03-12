@@ -169,7 +169,7 @@ export default function MeetingsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Reuniões</h1>
           <p className="text-muted-foreground">
-            Gerencie as reuniões do sistema RTI/MTSS
+            Gerencie as reuniões do sistema Innerview
           </p>
         </div>
         <Button onClick={() => router.push('/meetings/new')}>

@@ -149,7 +149,7 @@ export default function AssessmentsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Avaliações</h1>
           <p className="text-muted-foreground">
-            Gerencie as avaliações do sistema RTI/MTSS
+            Gerencie as avaliações do sistema Innerview
           </p>
         </div>
         <Button onClick={() => router.push('/assessments/new')}>

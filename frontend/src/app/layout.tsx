@@ -7,8 +7,8 @@ import { ThemeProvider } from '@/providers/theme-provider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'RTI/MTSS System',
-  description: 'Sistema de Resposta à Intervenção e Suporte Multi-Níveis',
+  title: 'Innerview',
+  description: 'Sistema de visualização interna de dados educacionais e suporte multi-níveis',
 };
 
 export default function RootLayout({

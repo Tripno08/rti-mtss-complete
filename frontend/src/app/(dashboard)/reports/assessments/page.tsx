@@ -145,7 +145,7 @@ export default function AssessmentsReportPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Relatório de Avaliações</h1>
             <p className="text-muted-foreground">
-              Análise detalhada das avaliações realizadas no programa RTI/MTSS
+              Análise detalhada das avaliações realizadas no programa Innerview
             </p>
           </div>
         </div>

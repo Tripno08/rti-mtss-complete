@@ -102,6 +102,9 @@ interface PageProps {
 }
 
 export default function TeamDetailsPage({ params }: PageProps) {
+  const resolvedParams = React.use(params);
+  const teamId = resolvedParams.id;
+  
   const [dashboard, setDashboard] = useState<TeamDashboard | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,7 +115,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
     const fetchTeamDashboard = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get(`/teams/${params.id}/dashboard`);
+        const response = await api.get(`/teams/${teamId}/dashboard`);
         setDashboard(response.data);
       } catch (error) {
         console.error('Erro ao buscar dashboard da equipe:', error);
@@ -123,13 +126,13 @@ export default function TeamDetailsPage({ params }: PageProps) {
     };
 
     fetchTeamDashboard();
-  }, [params.id]);
+  }, [teamId]);
 
   useEffect(() => {
     const fetchTeamStudents = async () => {
       try {
         setIsStudentsLoading(true);
-        const response = await api.get(`/teams/${params.id}/students`);
+        const response = await api.get(`/teams/${teamId}/students`);
         setStudents(response.data);
       } catch (error) {
         console.error('Erro ao buscar estudantes da equipe:', error);
@@ -140,10 +143,10 @@ export default function TeamDetailsPage({ params }: PageProps) {
     };
 
     fetchTeamStudents();
-  }, [params.id]);
+  }, [teamId]);
 
   const handleEditTeam = () => {
-    router.push(`/teams/${params.id}/edit`);
+    router.push(`/teams/${teamId}/edit`);
   };
 
   const handleDeleteTeam = async () => {
@@ -152,7 +155,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
     }
 
     try {
-      await api.delete(`/teams/${params.id}`);
+      await api.delete(`/teams/${teamId}`);
       toast.success('Equipe excluída com sucesso!');
       router.push('/teams');
     } catch (error) {
@@ -162,11 +165,11 @@ export default function TeamDetailsPage({ params }: PageProps) {
   };
 
   const handleAddMember = () => {
-    router.push(`/teams/${params.id}/members/add`);
+    router.push(`/teams/${teamId}/members/add`);
   };
 
   const handleAddStudent = () => {
-    router.push(`/teams/${params.id}/students/add`);
+    router.push(`/teams/${teamId}/students/add`);
   };
 
   const handleCreateMeeting = () => {

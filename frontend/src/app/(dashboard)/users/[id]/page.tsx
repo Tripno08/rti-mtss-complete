@@ -33,6 +33,8 @@ interface PageProps {
 }
 
 export default function UserDetailsPage({ params }: PageProps) {
+  const resolvedParams = React.use(params);
+  const id = resolvedParams.id;
   const [user, setUser] = useState<User | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,8 +45,8 @@ export default function UserDetailsPage({ params }: PageProps) {
     const fetchUserData = async () => {
       try {
         const [userResponse, studentsResponse] = await Promise.all([
-          api.get(`/users/${params.id}`),
-          api.get(`/students?userId=${params.id}`),
+          api.get(`/users/${id}`),
+          api.get(`/students?userId=${id}`),
         ]);
         
         setUser(userResponse.data);
@@ -58,11 +60,11 @@ export default function UserDetailsPage({ params }: PageProps) {
     };
 
     fetchUserData();
-  }, [params.id]);
+  }, [id]);
 
   const handleDelete = async () => {
     // Não permitir que o usuário exclua a si mesmo
-    if (params.id === currentUser?.id) {
+    if (id === currentUser?.id) {
       toast.error('Você não pode excluir sua própria conta.');
       return;
     }
@@ -72,7 +74,7 @@ export default function UserDetailsPage({ params }: PageProps) {
     }
 
     try {
-      await api.delete(`/users/${params.id}`);
+      await api.delete(`/users/${id}`);
       toast.success('Usuário excluído com sucesso!');
       router.push('/users');
     } catch (error) {
@@ -139,14 +141,14 @@ export default function UserDetailsPage({ params }: PageProps) {
             <>
               <Button 
                 variant="outline" 
-                onClick={() => router.push(`/users/${params.id}/edit`)}
+                onClick={() => router.push(`/users/${id}/edit`)}
               >
                 Editar
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={handleDelete}
-                disabled={params.id === currentUser?.id}
+                disabled={id === currentUser?.id}
               >
                 Excluir
               </Button>

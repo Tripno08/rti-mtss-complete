@@ -337,14 +337,14 @@ export default function WebhooksPage() {
         <CardHeader>
           <CardTitle>Sobre Webhooks</CardTitle>
           <CardDescription>
-            Informações sobre como usar webhooks no sistema RTI/MTSS.
+            Informações sobre como usar webhooks no sistema Innerview.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <h3 className="text-lg font-medium">O que são webhooks?</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Webhooks são callbacks HTTP que são acionados quando determinados eventos ocorrem no sistema. Eles permitem que sistemas externos sejam notificados em tempo real sobre mudanças no sistema RTI/MTSS.
+              Webhooks são callbacks HTTP que são acionados quando determinados eventos ocorrem no sistema. Eles permitem que sistemas externos sejam notificados em tempo real sobre mudanças no sistema Innerview.
             </p>
           </div>
 

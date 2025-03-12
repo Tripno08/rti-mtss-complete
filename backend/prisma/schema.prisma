@@ -498,6 +498,7 @@ model DificuldadeAprendizagem {
   
   // Relacionamentos
   estudanteDificuldades EstudanteDificuldade[]
+  intervencoes         DificuldadeIntervencao[]
   
   @@map("dificuldades_aprendizagem")
 }
@@ -685,6 +686,7 @@ model BaseIntervention {
   protocolos        InterventionProtocol[]
   intervencoes      Intervention[]
   kpis              InterventionKpi[]
+  dificuldades      DificuldadeIntervencao[]
   
   @@map("base_interventions")
 }
@@ -846,4 +848,22 @@ model Goal {
   intervention      Intervention @relation(fields: [interventionId], references: [id])
   
   @@map("goals")
+}
+
+// Modelo de relação entre Dificuldade de Aprendizagem e Intervenção Base
+model DificuldadeIntervencao {
+  id                String    @id @default(uuid())
+  eficacia          Int       // Valor de 1 a 5 indicando a eficácia da intervenção para esta dificuldade
+  observacoes       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relacionamentos
+  dificuldadeId     String
+  dificuldade       DificuldadeAprendizagem @relation(fields: [dificuldadeId], references: [id])
+  intervencaoId     String
+  intervencao       BaseIntervention @relation(fields: [intervencaoId], references: [id])
+  
+  @@unique([dificuldadeId, intervencaoId])
+  @@map("dificuldade_intervencoes")
 }

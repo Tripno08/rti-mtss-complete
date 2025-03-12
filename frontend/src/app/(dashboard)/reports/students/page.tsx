@@ -162,7 +162,7 @@ export default function StudentsReportPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Relatório de Estudantes</h1>
             <p className="text-muted-foreground">
-              Análise detalhada dos estudantes no programa RTI/MTSS
+              Análise detalhada dos estudantes no programa Innerview
             </p>
           </div>
         </div>
@@ -347,7 +347,7 @@ export default function StudentsReportPage() {
               <p className="text-sm font-medium text-muted-foreground">Total de Estudantes</p>
               <p className="text-2xl font-bold">242</p>
               <p className="text-sm text-muted-foreground">
-                No programa RTI/MTSS
+                No programa Innerview
               </p>
             </div>
             <div className="rounded-lg border p-4">
