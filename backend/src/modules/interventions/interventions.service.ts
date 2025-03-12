@@ -58,6 +58,12 @@ export class InterventionsService {
     });
   }
 
+  async findBaseInterventions() {
+    // Por enquanto, retorna um array vazio
+    // Isso será substituído pela implementação real quando o módulo base-interventions estiver funcionando
+    return [];
+  }
+
   async findOne(id: string) {
     const intervention = await this.prisma.intervention.findUnique({
       where: { id },

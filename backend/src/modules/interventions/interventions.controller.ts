@@ -30,6 +30,12 @@ export class InterventionsController {
     return this.interventionsService.findByStudentId(studentId);
   }
 
+  @Get('base')
+  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.SPECIALIST)
+  findBaseInterventions() {
+    return this.interventionsService.findBaseInterventions();
+  }
+
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.SPECIALIST)
   findOne(@Param('id') id: string) {
