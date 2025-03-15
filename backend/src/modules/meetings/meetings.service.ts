@@ -4,12 +4,16 @@ import { MeetingStatus } from '@prisma/client';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { AddParticipantDto } from './dto/add-participant.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class MeetingsService {
   private readonly logger = new Logger(MeetingsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async findAllMeetings(teamId?: string, userId?: string, status?: MeetingStatus) {
     try {
@@ -146,6 +150,16 @@ export class MeetingsService {
             userId,
           })),
         });
+
+        // Enviar notificações para os participantes
+        for (const userId of participantIds) {
+          await this.notificationsService.createSystemNotification(
+            userId,
+            'Nova reunião agendada',
+            `Você foi adicionado à reunião "${title}" agendada para ${new Date(date).toLocaleDateString('pt-BR')} às ${new Date(date).toLocaleTimeString('pt-BR')}.`,
+            `/meetings/${meeting.id}`,
+          );
+        }
       }
 
       // Retornar a reunião criada com os relacionamentos
@@ -257,7 +271,7 @@ export class MeetingsService {
       }
 
       // Adicionar novo participante
-      return await this.prisma.meetingParticipant.create({
+      const participant = await this.prisma.meetingParticipant.create({
         data: {
           meetingId,
           userId: addParticipantDto.userId,
@@ -272,8 +286,19 @@ export class MeetingsService {
               role: true,
             },
           },
+          meeting: true,
         },
       });
+
+      // Enviar notificação para o novo participante
+      await this.notificationsService.createSystemNotification(
+        addParticipantDto.userId,
+        'Você foi adicionado a uma reunião',
+        `Você foi adicionado à reunião "${participant.meeting.title}" agendada para ${new Date(participant.meeting.date).toLocaleDateString('pt-BR')} às ${new Date(participant.meeting.date).toLocaleTimeString('pt-BR')}.`,
+        `/meetings/${meetingId}`,
+      );
+
+      return participant;
     } catch (error) {
       this.logger.error(`Erro ao adicionar participante à reunião: ${error.message}`, error.stack);
       throw error;

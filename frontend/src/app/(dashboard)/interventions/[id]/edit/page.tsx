@@ -20,25 +20,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { api } from '@/lib/utils/api';
-
-interface Student {
-  id: string;
-  name: string;
-  grade: string;
-}
-
-interface Intervention {
-  id: string;
-  startDate: string;
-  endDate?: string;
-  type: string;
-  description: string;
-  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
-  notes?: string;
-  studentId: string;
-  student?: Student;
-}
+import { Loader2 } from 'lucide-react';
+import { getInterventionById, updateIntervention, Intervention } from '@/lib/api/interventions';
+import { getStudents, Student } from '@/lib/api/students';
 
 const formSchema = z.object({
   startDate: z.string().min(1, 'A data de início é obrigatória'),
@@ -84,14 +68,16 @@ export default function EditInterventionPage({ params }: PageProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [interventionResponse, studentsResponse] = await Promise.all([
-          api.get(`/interventions/${id}`),
-          api.get('/students'),
+        setIsLoading(true);
+        
+        // Buscar dados da intervenção e estudantes em paralelo
+        const [interventionData, studentsData] = await Promise.all([
+          getInterventionById(id),
+          getStudents()
         ]);
 
-        const interventionData = interventionResponse.data;
         setIntervention(interventionData);
-        setStudents(studentsResponse.data);
+        setStudents(studentsData);
 
         // Formatar as datas para o formato esperado pelo input date
         const startDate = new Date(interventionData.startDate).toISOString().split('T')[0];
@@ -127,7 +113,7 @@ export default function EditInterventionPage({ params }: PageProps) {
         endDate: data.endDate && data.endDate.trim() !== '' ? data.endDate : undefined,
       };
 
-      await api.patch(`/interventions/${id}`, formattedData);
+      await updateIntervention(id, formattedData);
       toast.success('Intervenção atualizada com sucesso!');
       router.push(`/interventions/${id}`);
     } catch (error) {
@@ -138,8 +124,9 @@ export default function EditInterventionPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center">
-        <p>Carregando...</p>
+      <div className="flex justify-center items-center h-48">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando...</span>
       </div>
     );
   }
@@ -261,7 +248,7 @@ export default function EditInterventionPage({ params }: PageProps) {
                   control={form.control}
                   name="studentId"
                   render={({ field }) => (
-                    <FormItem className="col-span-2">
+                    <FormItem>
                       <FormLabel>Aluno</FormLabel>
                       <FormControl>
                         <Select
@@ -307,14 +294,17 @@ export default function EditInterventionPage({ params }: PageProps) {
                   <FormItem>
                     <FormLabel>Observações (opcional)</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} {...field} />
+                      <Textarea rows={3} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" type="button" onClick={() => router.push(`/interventions/${id}`)}>
+                  Cancelar
+                </Button>
                 <Button type="submit">Salvar Alterações</Button>
               </div>
             </form>

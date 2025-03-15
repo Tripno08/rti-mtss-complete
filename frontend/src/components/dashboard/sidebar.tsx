@@ -85,7 +85,7 @@ export function Sidebar() {
     
     // Auto-expand the item that contains the current path
     const currentItem = navGroups.flatMap(group => group.items)
-      .find(item => item.items && (pathname === item.href || pathname.startsWith(item.href + '/')));
+      .find(item => item.items && (pathname === item.href || (pathname && pathname.startsWith(item.href + '/'))));
     
     if (currentItem) {
       setExpandedItems(prev => 
@@ -124,6 +124,15 @@ export function Sidebar() {
         },
         { href: '/students', label: 'Estudantes', icon: <Users className="h-5 w-5" /> },
         { href: '/teams', label: 'Equipes', icon: <Users2 className="h-5 w-5" /> },
+        { 
+          href: '/schools', 
+          label: 'Escolas', 
+          icon: <School className="h-5 w-5" />,
+          items: [
+            { href: '/schools', label: 'Escolas', icon: <School className="h-5 w-5" /> },
+            { href: '/school-networks', label: 'Redes Escolares', icon: <Puzzle className="h-5 w-5" /> },
+          ]
+        },
       ]
     },
     {
@@ -204,7 +213,7 @@ export function Sidebar() {
   const mobileOverlay = isMobile && isOpen && (
     <div
       className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300"
-      onClick={() => isMobile && useSidebarContext().toggle()}
+      onClick={() => isMobile && toggle()}
       aria-hidden="true"
     />
   );
@@ -242,9 +251,9 @@ export function Sidebar() {
                   className="sidebar-group-title cursor-pointer group flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   onClick={() => toggleGroupCollapse(group.title)}
                 >
-                  <h2>
-                    {group.title}
-                  </h2>
+                  <div className="flex items-center">
+                    {isOpen && <span>{group.title}</span>}
+                  </div>
                   <ChevronDown 
                     className={cn(
                       "h-4 w-4 transition-transform duration-200 opacity-70 group-hover:opacity-100",
@@ -271,7 +280,7 @@ export function Sidebar() {
                                   onClick={() => toggleExpanded(item.label)}
                                   className={cn(
                                     "sidebar-menu-item w-full justify-between flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                                    pathname.startsWith(item.href) && "bg-primary/10 text-primary"
+                                    pathname && pathname.startsWith(item.href) && "bg-primary/10 text-primary"
                                   )}
                                 >
                                   <div className="flex items-center">
@@ -370,7 +379,6 @@ const NavGroup = ({ group, isOpen }: { group: NavGroup; isOpen: boolean }) => {
         )}
       >
         <div className="flex items-center">
-          {group.icon && <group.icon className="mr-2 h-4 w-4" />}
           {isOpen && <span>{group.title}</span>}
         </div>
         {isOpen && (
@@ -398,7 +406,6 @@ const NavGroup = ({ group, isOpen }: { group: NavGroup; isOpen: boolean }) => {
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
-              {item.icon && <item.icon className="mr-2 h-4 w-4" />}
               <span>{item.label}</span>
             </Link>
           ))}

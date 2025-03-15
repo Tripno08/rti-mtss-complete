@@ -14,6 +14,7 @@ export class StudentsService {
         grade: createStudentDto.grade,
         dateOfBirth: new Date(createStudentDto.dateOfBirth),
         userId: createStudentDto.userId,
+        schoolId: createStudentDto.schoolId,
       },
     });
   }
@@ -29,6 +30,7 @@ export class StudentsService {
             role: true,
           },
         },
+        school: true,
       },
     });
   }
@@ -45,6 +47,7 @@ export class StudentsService {
             role: true,
           },
         },
+        school: true,
         assessments: true,
         interventions: true,
       },
@@ -67,6 +70,7 @@ export class StudentsService {
     if (updateStudentDto.grade) data.grade = updateStudentDto.grade;
     if (updateStudentDto.dateOfBirth) data.dateOfBirth = new Date(updateStudentDto.dateOfBirth);
     if (updateStudentDto.userId) data.userId = updateStudentDto.userId;
+    if (updateStudentDto.schoolId !== undefined) data.schoolId = updateStudentDto.schoolId;
 
     // Atualizar aluno
     return this.prisma.student.update({

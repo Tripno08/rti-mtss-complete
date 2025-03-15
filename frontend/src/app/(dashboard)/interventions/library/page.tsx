@@ -166,10 +166,10 @@ export default function InterventionsLibraryPage() {
     const matchesSearch = 
       intervencao.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       intervencao.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchescategoryFilter = !categoryFilter || categoryFilter === "all-categoryFilters" || intervencao.categoria === categoryFilter;
-    const matchesrtiFilter = !rtiFilter || rtiFilter === "all-rtiFilters" || intervencao.nivelRTI === rtiFilter;
-    const matchesevidenceFilter = !evidenceFilter || evidenceFilter === "all-evidenceFilters" || intervencao.nivelEvidencia === evidenceFilter;
-    return matchesSearch && matchesCategory && matchesRTI && matchesEvidence;
+    const matchesCategoryFilter = !categoryFilter || categoryFilter === "all-categoryFilters" || intervencao.categoria === categoryFilter;
+    const matchesRtiFilter = !rtiFilter || rtiFilter === "all-rtiFilters" || intervencao.nivelRTI === rtiFilter;
+    const matchesEvidenceFilter = !evidenceFilter || evidenceFilter === "all-evidenceFilters" || intervencao.nivelEvidencia === evidenceFilter;
+    return matchesSearch && matchesCategoryFilter && matchesRtiFilter && matchesEvidenceFilter;
   });
 
   // Função para formatar o nome da categoria

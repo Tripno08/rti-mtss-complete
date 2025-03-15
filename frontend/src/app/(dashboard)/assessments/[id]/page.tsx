@@ -62,9 +62,8 @@ interface PageProps {
   }>;
 }
 
-export default function AssessmentDetailsPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function AssessmentDetailsPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -79,7 +78,7 @@ export default function AssessmentDetailsPage({ params }: PageProps) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // TODO: Implementar a chamada real à API
-      console.log('Deletando avaliação:', params.id);
+      console.log('Deletando avaliação:', id);
       
       toast.success('Avaliação excluída com sucesso!');
       router.push('/assessments');
@@ -142,7 +141,7 @@ export default function AssessmentDetailsPage({ params }: PageProps) {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => router.push(`/assessments/${params.id}/edit`)}
+            onClick={() => router.push(`/assessments/${id}/edit`)}
           >
             <Edit className="mr-2 h-4 w-4" />
             Editar

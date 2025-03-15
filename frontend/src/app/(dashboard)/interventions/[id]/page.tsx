@@ -7,23 +7,15 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/utils/api';
-
-interface Intervention {
-  id: string;
-  startDate: string;
-  endDate?: string;
-  type: string;
-  description: string;
-  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
-  notes?: string;
-  studentId: string;
-  student?: {
-    id: string;
-    name: string;
-    grade: string;
-  };
-}
+import { Loader2 } from 'lucide-react';
+import { 
+  getInterventionById, 
+  deleteIntervention, 
+  updateIntervention, 
+  completeIntervention, 
+  cancelIntervention,
+  Intervention 
+} from '@/lib/api/interventions';
 
 interface PageProps {
   params: Promise<{
@@ -41,8 +33,8 @@ export default function InterventionDetailsPage({ params }: PageProps) {
   useEffect(() => {
     const fetchIntervention = async () => {
       try {
-        const response = await api.get(`/interventions/${id}`);
-        setIntervention(response.data);
+        const data = await getInterventionById(id);
+        setIntervention(data);
       } catch (error) {
         console.error('Erro ao buscar detalhes da intervenção:', error);
         toast.error('Erro ao carregar os detalhes da intervenção.');
@@ -60,7 +52,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
     }
 
     try {
-      await api.delete(`/interventions/${id}`);
+      await deleteIntervention(id);
       toast.success('Intervenção excluída com sucesso!');
       router.push('/interventions');
     } catch (error) {
@@ -71,8 +63,17 @@ export default function InterventionDetailsPage({ params }: PageProps) {
 
   const handleStatusChange = async (newStatus: 'ACTIVE' | 'COMPLETED' | 'CANCELLED') => {
     try {
-      const response = await api.patch(`/interventions/${id}`, { status: newStatus });
-      setIntervention(response.data);
+      let updatedIntervention;
+      
+      if (newStatus === 'COMPLETED') {
+        updatedIntervention = await completeIntervention(id);
+      } else if (newStatus === 'CANCELLED') {
+        updatedIntervention = await cancelIntervention(id);
+      } else {
+        updatedIntervention = await updateIntervention(id, { status: newStatus });
+      }
+      
+      setIntervention(updatedIntervention);
       toast.success('Status da intervenção atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar status da intervenção:', error);
@@ -83,7 +84,7 @@ export default function InterventionDetailsPage({ params }: PageProps) {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
+      return date.toLocaleDateString('pt-BR');
     } catch {
       return dateString;
     }
@@ -117,8 +118,9 @@ export default function InterventionDetailsPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center">
-        <p>Carregando...</p>
+      <div className="flex justify-center items-center h-48">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando...</span>
       </div>
     );
   }
@@ -251,13 +253,13 @@ export default function InterventionDetailsPage({ params }: PageProps) {
 
           <div className="mt-6">
             <h3 className="font-medium mb-2">Descrição</h3>
-            <p className="whitespace-pre-wrap">{intervention.description}</p>
+            <p className="text-sm">{intervention.description}</p>
           </div>
 
           {intervention.notes && (
-            <div className="mt-6">
+            <div className="mt-4">
               <h3 className="font-medium mb-2">Observações</h3>
-              <p className="whitespace-pre-wrap">{intervention.notes}</p>
+              <p className="text-sm">{intervention.notes}</p>
             </div>
           )}
         </CardContent>

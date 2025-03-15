@@ -85,7 +85,12 @@ export default function RegisterPage() {
       
       // Mensagem de erro personalizada com base na resposta da API
       const apiError = error as ApiError;
-      const errorMessage = apiError.response?.data?.message || 'Erro ao registrar. Tente novamente.';
+      let errorMessage = 'Erro ao registrar. Tente novamente.';
+      
+      if (apiError.response && apiError.response.data && apiError.response.data.message) {
+        errorMessage = apiError.response.data.message;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

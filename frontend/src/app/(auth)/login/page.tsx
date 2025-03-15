@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,18 +17,23 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+// Componente interno que usa useSearchParams
+function LoginPageContent() {
   const searchParams = useSearchParams();
-  const from = searchParams.get('from') || '/dashboard';
+  const from = searchParams?.get('from') || '/dashboard';
   const { login } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: 'admin@example.com',
+      password: 'password123'
+    }
   });
 
   const onSubmit = async (data: LoginFormData) => {
@@ -39,55 +44,27 @@ export default function LoginPage() {
       console.log('Tentando fazer login com:', data);
       console.log('API URL:', api.defaults.baseURL);
       
-      // Teste direto com axios para verificar a rota
-      try {
-        console.log('Tentando fazer login direto com axios');
-        const directResponse = await axios.post('http://localhost:3001/api/auth/login', data, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log('Resposta direta do axios:', directResponse.data);
-        
-        // Se o login direto funcionar, atualizar o estado manualmente
-        const { user, accessToken, refreshToken } = directResponse.data;
-        
-        // Configurar o token de acesso para futuras requisições
-        api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-        
-        // Atualizar o localStorage
-        const authStorage = JSON.parse(localStorage.getItem('auth-storage') || '{}');
-        authStorage.state = {
-          isAuthenticated: true,
-          user,
-          accessToken,
-          refreshToken,
-        };
-        localStorage.setItem('auth-storage', JSON.stringify(authStorage));
-        
-        toast.success('Login realizado com sucesso!');
-        
-        // Redirecionar manualmente após o login
-        setTimeout(() => {
-          window.location.href = from;
-        }, 1000);
-        
-        return;
-      } catch (directError) {
-        console.error('Erro no login direto com axios:', directError);
-      }
-      
-      // Se o login direto falhar, tentar com o método normal
+      // Usar o método de login do store de autenticação
       await login(data);
+      
       toast.success('Login realizado com sucesso!');
       
-      // Redirecionar manualmente após o login
+      // Redirecionar após o login
       setTimeout(() => {
         window.location.href = from;
       }, 1000);
     } catch (error) {
       console.error('Erro no login:', error);
+      
+      // Mostrar detalhes do erro
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Resposta do servidor:', error.response.data);
+        console.error('Status do erro:', error.response.status);
+        console.error('Headers da resposta:', error.response.headers);
+      }
+      
       toast.error('Erro ao fazer login. Verifique suas credenciais.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -146,5 +123,14 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+// Componente exportado que envolve o componente interno com Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 } 

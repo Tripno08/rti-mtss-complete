@@ -118,10 +118,10 @@ export default function ScreeningInstrumentsPage() {
   const filteredInstruments = instruments?.filter((instrument: ScreeningInstrument) => {
     const matchesSearch = instrument.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          instrument.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchescategoryFilter = !categoryFilter || categoryFilter === "all-categoryFilters" || instrument.categoria === categoryFilter;
+    const matchesCategoryFilter = !categoryFilter || categoryFilter === "all-categoryFilters" || instrument.categoria === categoryFilter;
     const matchesActive = activeFilter === 'all' ? true : 
                          activeFilter === 'active' ? instrument.ativo : !instrument.ativo;
-    return matchesSearch && matchesCategory && matchesActive;
+    return matchesSearch && matchesCategoryFilter && matchesActive;
   });
 
   // Função para formatar o nome da categoria

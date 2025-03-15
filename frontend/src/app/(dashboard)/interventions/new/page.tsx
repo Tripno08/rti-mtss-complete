@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,13 +19,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { api } from '@/lib/utils/api';
-
-interface Student {
-  id: string;
-  name: string;
-  grade: string;
-}
+import { Loader2 } from 'lucide-react';
+import { createIntervention } from '@/lib/api/interventions';
+import { getStudents, Student } from '@/lib/api/students';
 
 const formSchema = z.object({
   startDate: z.string().min(1, 'A data de início é obrigatória'),
@@ -45,6 +41,9 @@ export default function NewInterventionPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const studentId = searchParams.get('studentId');
+  const classId = searchParams.get('classId');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,15 +54,31 @@ export default function NewInterventionPage() {
       description: '',
       status: 'ACTIVE',
       notes: '',
-      studentId: '',
+      studentId: studentId || '',
     },
   });
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await api.get('/students');
-        setStudents(response.data);
+        setIsLoading(true);
+        let studentsData;
+        
+        // Se tiver classId, buscar apenas alunos da turma
+        if (classId) {
+          // Implementar quando tivermos a API para buscar alunos por turma
+          studentsData = await getStudents();
+          // Filtrar por turma quando tivermos essa informação
+        } else {
+          studentsData = await getStudents();
+        }
+        
+        setStudents(studentsData);
+        
+        // Se tiver studentId nos parâmetros, pré-selecionar o aluno
+        if (studentId) {
+          form.setValue('studentId', studentId);
+        }
       } catch (error) {
         console.error('Erro ao buscar alunos:', error);
         toast.error('Erro ao carregar a lista de alunos.');
@@ -73,7 +88,7 @@ export default function NewInterventionPage() {
     };
 
     fetchStudents();
-  }, []);
+  }, [form, studentId, classId]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -83,9 +98,9 @@ export default function NewInterventionPage() {
         endDate: data.endDate && data.endDate.trim() !== '' ? data.endDate : undefined,
       };
 
-      const response = await api.post('/interventions', formattedData);
+      const newIntervention = await createIntervention(formattedData);
       toast.success('Intervenção criada com sucesso!');
-      router.push(`/interventions/${response.data.id}`);
+      router.push(`/interventions/${newIntervention.id}`);
     } catch (error) {
       console.error('Erro ao criar intervenção:', error);
       toast.error('Erro ao criar intervenção.');
@@ -94,8 +109,9 @@ export default function NewInterventionPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center">
-        <p>Carregando...</p>
+      <div className="flex justify-center items-center h-48">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando...</span>
       </div>
     );
   }
@@ -256,14 +272,17 @@ export default function NewInterventionPage() {
                   <FormItem>
                     <FormLabel>Observações (opcional)</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} {...field} />
+                      <Textarea rows={3} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" type="button" onClick={() => router.push('/interventions')}>
+                  Cancelar
+                </Button>
                 <Button type="submit">Criar Intervenção</Button>
               </div>
             </form>

@@ -64,12 +64,11 @@ interface PageProps {
   }>;
 }
 
-export default function EditDocumentPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function EditDocumentPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentSchema),
@@ -90,7 +89,7 @@ export default function EditDocumentPage({ params }: PageProps) {
         // Simulando uma chamada de API
         setTimeout(() => {
           const mockDocument: Document = {
-            id: params.id,
+            id: id,
             title: 'Formulário de Avaliação Inicial',
             type: 'form',
             category: 'assessment',
@@ -123,24 +122,24 @@ export default function EditDocumentPage({ params }: PageProps) {
     };
 
     fetchDocument();
-  }, [params.id, form]);
+  }, [id, form]);
 
   const onSubmit = async (data: DocumentForm) => {
-    setIsSubmitting(true);
+    setIsSaving(true);
     try {
       // Simulando uma chamada à API
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // TODO: Implementar a chamada real à API
-      console.log('Atualizando documento:', params.id, data);
+      console.log('Atualizando documento:', id, data);
       
       toast.success('Documento atualizado com sucesso!');
-      router.push(`/documents/${params.id}`);
+      router.push(`/documents/${id}`);
     } catch (error) {
       console.error('Erro ao atualizar documento:', error);
       toast.error('Erro ao atualizar documento. Tente novamente.');
     } finally {
-      setIsSubmitting(false);
+      setIsSaving(false);
     }
   };
 
@@ -334,9 +333,9 @@ export default function EditDocumentPage({ params }: PageProps) {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSaving}>
                   <Save className="mr-2 h-4 w-4" />
-                  {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
+                  {isSaving ? 'Salvando...' : 'Salvar Alterações'}
                 </Button>
               </div>
             </form>

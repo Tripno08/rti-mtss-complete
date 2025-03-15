@@ -57,7 +57,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function NewIntegrationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const platform = searchParams.get('platform') || 'GOOGLE_CLASSROOM';
+  const platform = searchParams?.get('platform') || 'GOOGLE_CLASSROOM';
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Definir valores padrão com base na plataforma

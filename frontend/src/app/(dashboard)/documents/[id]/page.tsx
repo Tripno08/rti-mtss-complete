@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -59,12 +59,13 @@ interface PageProps {
 }
 
 export default function DocumentDetailsPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+  const resolvedParams = use(params);
+  const { id } = resolvedParams;
   const router = useRouter();
   const [document, setDocument] = useState<Document | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -73,7 +74,7 @@ export default function DocumentDetailsPage({ params }: PageProps) {
         // Simulando uma chamada de API
         setTimeout(() => {
           const mockDocument: Document = {
-            id: params.id,
+            id: id,
             title: 'Formulário de Avaliação Inicial',
             type: 'form',
             category: 'Avaliação',
@@ -97,7 +98,7 @@ export default function DocumentDetailsPage({ params }: PageProps) {
     };
 
     fetchDocument();
-  }, [params.id]);
+  }, [id]);
 
   const handleDelete = async () => {
     try {
@@ -105,7 +106,7 @@ export default function DocumentDetailsPage({ params }: PageProps) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // TODO: Implementar a chamada real à API
-      console.log('Deletando documento:', params.id);
+      console.log('Deletando documento:', id);
       
       toast.success('Documento excluído com sucesso!');
       router.push('/documents');

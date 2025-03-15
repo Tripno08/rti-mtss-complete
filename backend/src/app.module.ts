@@ -14,13 +14,20 @@ import { TeamsModule } from './modules/teams/teams.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
 import { CommunicationsModule } from './modules/communications/communications.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
-import { DificuldadesAprendizagemModule } from './modules/dificuldades-aprendizagem/dificuldades-aprendizagem.module';
+// import { DificuldadesAprendizagemModule } from './modules/dificuldades-aprendizagem/dificuldades-aprendizagem.module';
 import { ScreeningInstrumentsModule } from './modules/screening-instruments/screening-instruments.module';
 import { ScreeningsModule } from './modules/screenings/screenings.module';
 import { ScreeningResultsModule } from './modules/screening-results/screening-results.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { BaseInterventionsModule } from './modules/base-interventions/base-interventions.module';
 import { InterventionProtocolsModule } from './modules/intervention-protocols/intervention-protocols.module';
+import { SchoolsModule } from './modules/schools/schools.module';
+import { SchoolNetworksModule } from './modules/school-networks/school-networks.module';
+import { ClassesModule } from './modules/classes/classes.module';
+import { ContentsModule } from './modules/contents/contents.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { LessonPlansModule } from './modules/lesson-plans/lesson-plans.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -39,12 +46,19 @@ import { InterventionProtocolsModule } from './modules/intervention-protocols/in
     MeetingsModule,
     CommunicationsModule,
     ReferralsModule,
-    DificuldadesAprendizagemModule,
+    // DificuldadesAprendizagemModule,
     ScreeningInstrumentsModule,
     ScreeningsModule,
     ScreeningResultsModule,
     BaseInterventionsModule,
     InterventionProtocolsModule,
+    SchoolsModule,
+    SchoolNetworksModule,
+    ClassesModule,
+    ContentsModule,
+    NotificationsModule,
+    LessonPlansModule,
+    CalendarModule,
   ],
   controllers: [AppController],
   providers: [AppService],

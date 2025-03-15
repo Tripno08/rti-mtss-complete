@@ -2,44 +2,58 @@
 
 import { Header } from '@/components/dashboard/header';
 import { Sidebar } from '@/components/dashboard/sidebar';
-import { ProtectedRoute } from '@/components/auth/protected-route';
-import { ReactQueryProvider } from '@/providers/query-provider';
 import { SidebarProvider } from '@/providers/sidebar-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
 import { useEffect, useState } from 'react';
 
-export default function DashboardLayout({
-  children,
-}: {
+interface DashboardLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
+    // Simular um tempo de carregamento para mostrar o indicador
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
+  // Não renderizar nada até que o componente esteja montado no cliente
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <ProtectedRoute>
-      <ReactQueryProvider>
-        <SidebarProvider>
-          {!isMounted ? (
-            <div className="flex h-screen items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-innerview-primary border-t-transparent"></div>
-              <span className="ml-2">Carregando...</span>
-            </div>
-          ) : (
-            <div className="flex min-h-screen">
-              <Sidebar />
-              <div className="w-full bg-gray-50 dark:bg-[#020d1a]">
-                <Header />
-                <main className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-                  {children}
-                </main>
-              </div>
-            </div>
-          )}
-        </SidebarProvider>
-      </ReactQueryProvider>
-    </ProtectedRoute>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <SidebarProvider>
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/90 dark:from-background dark:via-background/95 dark:to-background/80">
+          <Header />
+          <div className="flex flex-1">
+            <Sidebar />
+            <main className="flex-1 overflow-x-hidden p-4 md:p-6 lg:p-8">
+              {isLoading ? (
+                <div className="flex h-full w-full items-center justify-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                </div>
+              ) : (
+                <div className="mx-auto w-full max-w-7xl">
+                  <div className="rounded-xl bg-white/90 p-4 shadow-md backdrop-blur-sm dark:bg-gray-900/40 md:p-6">
+                    {children}
+                  </div>
+                </div>
+              )}
+            </main>
+          </div>
+          <Toaster />
+        </div>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 } 

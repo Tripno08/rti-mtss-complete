@@ -41,4 +41,37 @@ declare module 'regression' {
 
   const regression: RegressionLib;
   export default regression;
+}
+
+interface School {
+  id: string;
+  name: string;
+  code?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  networkId?: string;
+  network?: SchoolNetwork;
+  _count?: {
+    users: number;
+    students: number;
+    teams: number;
+  };
+}
+
+interface SchoolNetwork {
+  id: string;
+  name: string;
+  description?: string;
+  code?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  schools?: School[];
+  _count?: {
+    schools: number;
+  };
 } 

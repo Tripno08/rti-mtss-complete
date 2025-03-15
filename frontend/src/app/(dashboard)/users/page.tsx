@@ -6,17 +6,9 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/utils/api';
+import { Loader2 } from 'lucide-react';
+import { getUsers, deleteUser, User } from '@/lib/api/users';
 import { useAuthStore } from '@/lib/stores/auth';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -27,8 +19,9 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await api.get('/users');
-        setUsers(response.data);
+        setIsLoading(true);
+        const data = await getUsers();
+        setUsers(data);
       } catch (error) {
         console.error('Erro ao buscar usuários:', error);
         toast.error('Erro ao carregar a lista de usuários.');
@@ -52,7 +45,7 @@ export default function UsersPage() {
     }
 
     try {
-      await api.delete(`/users/${id}`);
+      await deleteUser(id);
       setUsers(users.filter((user) => user.id !== id));
       toast.success('Usuário excluído com sucesso!');
     } catch (error) {
@@ -96,8 +89,9 @@ export default function UsersPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center">
-          <p>Carregando...</p>
+        <div className="flex justify-center items-center h-48">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2">Carregando...</span>
         </div>
       ) : users.length === 0 ? (
         <Card>
@@ -126,6 +120,12 @@ export default function UsersPage() {
                     <span className="font-medium">Atualizado em:</span>
                     <span>{formatDate(user.updatedAt)}</span>
                   </div>
+                  {user.school && (
+                    <div className="flex justify-between">
+                      <span className="font-medium">Escola:</span>
+                      <span>{user.school.name}</span>
+                    </div>
+                  )}
                   <div className="mt-4 flex justify-end space-x-2">
                     <Button
                       variant="outline"

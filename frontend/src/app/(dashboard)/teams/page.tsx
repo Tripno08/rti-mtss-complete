@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlusCircle, Users, FileText } from 'lucide-react';
-import { api } from '@/lib/utils/api';
 
 interface Team {
   id: string;
@@ -24,6 +23,70 @@ interface Team {
   };
 }
 
+// Dados mockados para desenvolvimento
+const MOCK_TEAMS: Team[] = [
+  {
+    id: '1',
+    name: 'Equipe de Intervenção Alfabetização',
+    description: 'Equipe focada em intervenções de alfabetização para alunos do 1º ao 3º ano',
+    active: true,
+    createdAt: '2025-01-15T10:00:00Z',
+    updatedAt: '2025-03-10T14:30:00Z',
+    _count: {
+      members: 8,
+      students: 45
+    }
+  },
+  {
+    id: '2',
+    name: 'Equipe de Suporte Matemático',
+    description: 'Equipe especializada em intervenções matemáticas para todos os níveis',
+    active: true,
+    createdAt: '2025-02-01T09:15:00Z',
+    updatedAt: '2025-03-05T11:20:00Z',
+    _count: {
+      members: 6,
+      students: 38
+    }
+  },
+  {
+    id: '3',
+    name: 'Equipe de Comportamento e Socioemocional',
+    description: 'Equipe focada em intervenções comportamentais e desenvolvimento socioemocional',
+    active: true,
+    createdAt: '2025-01-20T13:45:00Z',
+    updatedAt: '2025-03-12T16:10:00Z',
+    _count: {
+      members: 10,
+      students: 52
+    }
+  },
+  {
+    id: '4',
+    name: 'Equipe de Necessidades Especiais',
+    description: 'Equipe dedicada a estudantes com necessidades educacionais especiais',
+    active: false,
+    createdAt: '2024-11-10T08:30:00Z',
+    updatedAt: '2025-02-28T15:45:00Z',
+    _count: {
+      members: 12,
+      students: 28
+    }
+  },
+  {
+    id: '5',
+    name: 'Equipe de Avaliação e Monitoramento',
+    description: 'Equipe responsável por avaliações diagnósticas e monitoramento de progresso',
+    active: true,
+    createdAt: '2025-01-05T11:20:00Z',
+    updatedAt: '2025-03-08T09:30:00Z',
+    _count: {
+      members: 5,
+      students: 120
+    }
+  }
+];
+
 export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,11 +94,13 @@ export default function TeamsPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Simulando uma chamada de API
     const fetchTeams = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get('/teams');
-        setTeams(response.data);
+        // Simulando um delay de rede
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setTeams(MOCK_TEAMS);
       } catch (error) {
         console.error('Erro ao buscar equipes:', error);
         toast.error('Erro ao carregar equipes. Tente novamente mais tarde.');

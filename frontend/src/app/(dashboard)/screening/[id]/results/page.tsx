@@ -146,9 +146,8 @@ interface PageProps {
   }>;
 }
 
-export default function ScreeningResultsPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function ScreeningResultsPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('results');
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<string>('all');
@@ -159,9 +158,9 @@ export default function ScreeningResultsPage({ params }: PageProps) {
     isLoading, 
     isError 
   } = useQuery({
-    queryKey: ['screening', params.id],
+    queryKey: ['screening', id],
     queryFn: async () => {
-      const response = await api.get(`/screenings/${params.id}`);
+      const response = await api.get(`/screenings/${id}`);
       return response.data;
     },
   });
@@ -177,7 +176,7 @@ export default function ScreeningResultsPage({ params }: PageProps) {
   // Mutação para registrar resultados
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      return api.post(`/screening-results/batch/${params.id}`, values.resultados);
+      return api.post(`/screening-results/batch/${id}`, values.resultados);
     },
     onSuccess: () => {
       toast.success('Resultados registrados com sucesso');

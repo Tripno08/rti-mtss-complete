@@ -3,43 +3,45 @@
 @tailwind utilities;
 
 body {
-  @apply bg-white text-black;
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-50;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 196 64% 51%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 215 30% 30%;
+    --secondary-foreground: 210 40% 98%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
+    --accent: 196 64% 95%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 196 64% 51%;
     --radius: 0.5rem;
+    --pastel-blue: 210 60% 85%;
+    --pastel-blue-dark: 210 50% 40%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222.2 30% 7%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 30% 9%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 30% 7%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
+    --primary: 196 64% 51%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 215 30% 30%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -49,7 +51,9 @@ body {
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 196 64% 51%;
+    --pastel-blue: 210 50% 40%;
+    --pastel-blue-dark: 210 60% 30%;
   }
 }
 
@@ -59,6 +63,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    background-image: 
+      radial-gradient(at 100% 0%, hsla(var(--primary), 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(var(--secondary), 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
@@ -73,18 +81,73 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  @apply bg-primary/20;
   border-radius: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  @apply bg-primary/30;
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #4b5563;
+/* Estilos para o menu lateral */
+.sidebar-menu-item {
+  @apply transition-all duration-200;
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+.sidebar-menu-item:hover {
+  @apply bg-accent text-accent-foreground;
+}
+
+.sidebar-menu-item.active {
+  @apply bg-primary/10 text-primary font-medium;
+}
+
+.sidebar-submenu-item {
+  @apply transition-all duration-200;
+}
+
+.sidebar-submenu-item:hover {
+  @apply bg-accent/50 text-accent-foreground;
+}
+
+.sidebar-submenu-item.active {
+  @apply bg-primary/10 text-primary font-medium;
+}
+
+.sidebar-group-title {
+  @apply text-xs font-semibold text-muted-foreground uppercase tracking-wider;
+}
+
+/* Animações e transições */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Estilos para cards e containers */
+.glass-effect {
+  @apply bg-background/80 backdrop-blur-sm border border-border/50 shadow-sm;
+}
+
+.dashboard-card {
+  @apply rounded-lg p-4 bg-card shadow-sm border border-border transition-all duration-200 hover:shadow-md;
+}
+
+.dashboard-card-hover {
+  @apply hover:border-primary/20 hover:bg-accent/50;
+}
+
+/* Header com tom de azul pastel */
+.header-pastel-blue {
+  background-color: hsl(var(--pastel-blue));
+  @apply text-gray-800;
+}
+
+.dark .header-pastel-blue {
+  background-color: hsl(var(--pastel-blue-dark));
+  @apply text-gray-100;
 }

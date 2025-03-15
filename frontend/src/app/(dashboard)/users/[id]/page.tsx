@@ -7,24 +7,10 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/utils/api';
+import { Loader2 } from 'lucide-react';
+import { getUserById, deleteUser, User } from '@/lib/api/users';
+import { getStudentsByUserId, Student } from '@/lib/api/students';
 import { useAuthStore } from '@/lib/stores/auth';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Student {
-  id: string;
-  name: string;
-  grade: string;
-  dateOfBirth: string;
-}
 
 interface PageProps {
   params: Promise<{
@@ -44,13 +30,20 @@ export default function UserDetailsPage({ params }: PageProps) {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const [userResponse, studentsResponse] = await Promise.all([
-          api.get(`/users/${id}`),
-          api.get(`/students?userId=${id}`),
-        ]);
+        setIsLoading(true);
         
-        setUser(userResponse.data);
-        setStudents(studentsResponse.data);
+        // Buscar dados do usuário e estudantes associados
+        const userData = await getUserById(id);
+        setUser(userData);
+        
+        // Buscar estudantes associados ao usuário
+        try {
+          const studentsData = await getStudentsByUserId(id);
+          setStudents(studentsData);
+        } catch (error) {
+          console.error('Erro ao buscar estudantes do usuário:', error);
+          setStudents([]);
+        }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
         toast.error('Erro ao carregar os dados do usuário.');
@@ -74,7 +67,7 @@ export default function UserDetailsPage({ params }: PageProps) {
     }
 
     try {
-      await api.delete(`/users/${id}`);
+      await deleteUser(id);
       toast.success('Usuário excluído com sucesso!');
       router.push('/users');
     } catch (error) {
@@ -110,8 +103,9 @@ export default function UserDetailsPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center">
-        <p>Carregando...</p>
+      <div className="flex justify-center items-center h-48">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando...</span>
       </div>
     );
   }
@@ -179,6 +173,12 @@ export default function UserDetailsPage({ params }: PageProps) {
                 <h3 className="font-medium text-sm text-muted-foreground">Papel</h3>
                 <p>{user.role === 'ADMIN' ? 'Administrador' : user.role === 'TEACHER' ? 'Professor' : 'Especialista'}</p>
               </div>
+              {user.school && (
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground">Escola</h3>
+                  <p>{user.school.name}</p>
+                </div>
+              )}
               <div>
                 <h3 className="font-medium text-sm text-muted-foreground">Criado em</h3>
                 <p>{formatDate(user.createdAt)}</p>

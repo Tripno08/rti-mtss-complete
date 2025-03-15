@@ -74,10 +74,10 @@ interface PageProps {
   }>;
 }
 
-export default function EditMeetingPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function EditMeetingPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<MeetingForm>({
@@ -103,10 +103,10 @@ export default function EditMeetingPage({ params }: PageProps) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // TODO: Implementar a chamada real à API
-      console.log('Atualizando reunião:', params.id, data);
+      console.log('Atualizando reunião:', id, data);
       
       toast.success('Reunião atualizada com sucesso!');
-      router.push(`/meetings/${params.id}`);
+      router.push(`/meetings/${id}`);
     } catch (error) {
       console.error('Erro ao atualizar reunião:', error);
       toast.error('Erro ao atualizar reunião. Tente novamente.');

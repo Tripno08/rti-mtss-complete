@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '@/lib/utils/api';
+import axios from 'axios';
 
 interface User {
   id: string;
@@ -18,14 +19,39 @@ interface AuthState {
   logout: () => void;
 }
 
-// Função para limpar o localStorage
-const clearAuthStorage = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('auth-storage');
-    
-    // Também remover o cookie se possível
-    document.cookie = 'auth-storage=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-  }
+// Função segura para criar o storage
+const createSafeStorage = () => {
+  return {
+    getItem: (name: string): string | null => {
+      try {
+        if (typeof window !== 'undefined') {
+          return localStorage.getItem(name);
+        }
+        return null;
+      } catch (error) {
+        console.error('Erro ao acessar localStorage:', error);
+        return null;
+      }
+    },
+    setItem: (name: string, value: string): void => {
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(name, value);
+        }
+      } catch (error) {
+        console.error('Erro ao definir localStorage:', error);
+      }
+    },
+    removeItem: (name: string): void => {
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem(name);
+        }
+      } catch (error) {
+        console.error('Erro ao remover do localStorage:', error);
+      }
+    }
+  };
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -45,10 +71,38 @@ export const useAuthStore = create<AuthState>()(
             refreshToken: null,
           });
 
-          // A rota correta é '/api/auth/login' ou apenas '/auth/login' dependendo da baseURL
-          // Como estamos usando a URL completa com '/api' na baseURL, devemos usar apenas '/auth/login'
-          console.log('API URL antes do login:', api.defaults.baseURL);
-          const response = await api.post('/auth/login', credentials);
+          console.log('Tentando login com API URL:', api.defaults.baseURL);
+          console.log('Credenciais:', credentials);
+          
+          // Tentar login com diferentes URLs
+          let response;
+          let error;
+          
+          try {
+            // Primeira tentativa: URL padrão
+            console.log('Tentativa 1: URL padrão');
+            response = await api.post('/auth/login', credentials);
+          } catch (err) {
+            error = err;
+            console.error('Erro na primeira tentativa:', err);
+            
+            try {
+              // Segunda tentativa: URL direta
+              console.log('Tentativa 2: URL direta');
+              response = await axios.post('http://localhost:3001/api/auth/login', credentials, {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                withCredentials: false
+              });
+            } catch (err2) {
+              console.error('Erro na segunda tentativa:', err2);
+              throw error; // Lançar o erro original se ambas as tentativas falharem
+            }
+          }
+          
+          console.log('Resposta do login:', response?.data);
+          
           const { user, accessToken, refreshToken } = response.data;
 
           if (!user || !accessToken || !refreshToken) {
@@ -71,21 +125,25 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       logout: () => {
-        // Limpar o token de autorização
-        delete api.defaults.headers.common.Authorization;
+        try {
+          // Limpar o token de autorização
+          delete api.defaults.headers.common.Authorization;
 
-        // Limpar o estado
-        set({
-          isAuthenticated: false,
-          user: null,
-          accessToken: null,
-          refreshToken: null,
-        });
+          // Limpar o estado
+          set({
+            isAuthenticated: false,
+            user: null,
+            accessToken: null,
+            refreshToken: null,
+          });
+        } catch (error) {
+          console.error('Erro durante o logout:', error);
+        }
       },
     }),
     {
       name: 'auth-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => createSafeStorage()),
     }
   )
 ); 

@@ -152,9 +152,8 @@ interface PageProps {
   }>;
 }
 
-export default function LearningDifficultyPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function LearningDifficultyPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const isNew = id === 'new';
   

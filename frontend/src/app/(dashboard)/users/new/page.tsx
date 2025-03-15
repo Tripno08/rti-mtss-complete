@@ -18,7 +18,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { api } from '@/lib/utils/api';
+import { Loader2 } from 'lucide-react';
+import { createUser } from '@/lib/api/users';
 import { useAuthStore } from '@/lib/stores/auth';
 
 const formSchema = z.object({
@@ -35,17 +36,6 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-// Definindo a interface para o erro da API
-interface ApiErrorResponse {
-  data?: {
-    message?: string;
-  };
-}
-
-interface ApiError {
-  response?: ApiErrorResponse;
-}
 
 export default function NewUserPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -86,15 +76,19 @@ export default function NewUserPage() {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...userData } = data;
       
-      const response = await api.post('/users', userData);
+      const newUser = await createUser(userData);
       toast.success('Usuário criado com sucesso!');
-      router.push(`/users/${response.data.id}`);
-    } catch (error: unknown) {
+      router.push(`/users/${newUser.id}`);
+    } catch (error) {
       console.error('Erro ao criar usuário:', error);
       
-      // Mensagem de erro personalizada com base na resposta da API
-      const apiError = error as ApiError;
-      const errorMessage = apiError.response?.data?.message || 'Erro ao criar usuário. Tente novamente.';
+      // Mensagem de erro personalizada
+      let errorMessage = 'Erro ao criar usuário. Tente novamente.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -227,7 +221,14 @@ export default function NewUserPage() {
 
               <div className="flex justify-end">
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Criando...' : 'Criar Usuário'}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Criando...
+                    </>
+                  ) : (
+                    'Criar Usuário'
+                  )}
                 </Button>
               </div>
             </form>

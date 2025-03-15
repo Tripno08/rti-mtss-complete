@@ -18,7 +18,7 @@ export function ChartCard({
 }: ChartCardProps) {
   return (
     <div className={cn(
-      "rounded-lg border border-stroke bg-white p-5 shadow-sm dark:border-stroke-dark dark:bg-gray-dark",
+      "rounded-lg border border-stroke bg-white p-5 shadow-sm dark:border-stroke-dark dark:bg-gray-dark flex flex-col",
       className
     )}>
       <div className="mb-4 flex items-center justify-between">
@@ -36,7 +36,7 @@ export function ChartCard({
         )}
       </div>
       
-      <div className="h-full w-full">
+      <div className="flex-1 w-full">
         {children}
       </div>
     </div>

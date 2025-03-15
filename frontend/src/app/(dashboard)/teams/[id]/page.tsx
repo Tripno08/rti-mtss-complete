@@ -101,22 +101,24 @@ interface PageProps {
   }>;
 }
 
-export default function TeamDetailsPage({ params }: PageProps) {
-  const resolvedParams = React.use(params);
-  const teamId = resolvedParams.id;
-  
-  const [dashboard, setDashboard] = useState<TeamDashboard | null>(null);
-  const [students, setStudents] = useState<Student[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isStudentsLoading, setIsStudentsLoading] = useState(true);
+export default async function TeamDetailsPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [teamDashboard, setTeamDashboard] = useState<TeamDashboard | null>(null);
+  const [teamStudents, setTeamStudents] = useState<Student[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const teamId = id;
+  
+  const [isStudentsLoading, setIsStudentsLoading] = useState(true);
 
   useEffect(() => {
     const fetchTeamDashboard = async () => {
       try {
         setIsLoading(true);
         const response = await api.get(`/teams/${teamId}/dashboard`);
-        setDashboard(response.data);
+        setTeamDashboard(response.data);
       } catch (error) {
         console.error('Erro ao buscar dashboard da equipe:', error);
         toast.error('Erro ao carregar informações da equipe. Tente novamente mais tarde.');
@@ -133,7 +135,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
       try {
         setIsStudentsLoading(true);
         const response = await api.get(`/teams/${teamId}/students`);
-        setStudents(response.data);
+        setTeamStudents(response.data);
       } catch (error) {
         console.error('Erro ao buscar estudantes da equipe:', error);
         toast.error('Erro ao carregar estudantes da equipe. Tente novamente mais tarde.');
@@ -173,7 +175,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
   };
 
   const handleCreateMeeting = () => {
-    router.push(`/meetings/new?teamId=${params.id}`);
+    router.push(`/meetings/new?teamId=${id}`);
   };
 
   const getInitials = (name: string) => {
@@ -289,7 +291,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
     );
   }
 
-  if (!dashboard) {
+  if (!teamDashboard) {
     return (
       <div className="flex flex-col items-center justify-center h-[50vh]">
         <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
@@ -302,7 +304,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
     );
   }
 
-  const { team, stats, upcomingMeetings, recentReferrals } = dashboard;
+  const { team, stats, upcomingMeetings, recentReferrals } = teamDashboard;
 
   return (
     <div className="space-y-6">
@@ -586,7 +588,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
                 <Skeleton key={index} className="h-32 w-full" />
               ))}
             </div>
-          ) : students.length === 0 ? (
+          ) : teamStudents.length === 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle>Nenhum estudante encontrado</CardTitle>
@@ -608,7 +610,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
             </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {students.map((student) => (
+              {teamStudents.map((student) => (
                 <Card key={student.id}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -654,7 +656,7 @@ export default function TeamDetailsPage({ params }: PageProps) {
                             .then(() => {
                               toast.success('Estudante removido com sucesso!');
                               // Recarregar dados
-                              setStudents(students.filter(s => s.id !== student.id));
+                              setTeamStudents(teamStudents.filter(s => s.id !== student.id));
                             })
                             .catch((error) => {
                               console.error('Erro ao remover estudante:', error);

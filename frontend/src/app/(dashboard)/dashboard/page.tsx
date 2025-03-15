@@ -4,10 +4,10 @@ import { StatCard } from '@/components/dashboard/stat-card';
 import { ChartCard } from '@/components/dashboard/chart-card';
 import { DataTable } from '@/components/dashboard/data-table';
 import { Button } from '@/components/ui/button';
-import { Users, BookOpen, Target, Calendar, ArrowRight, PieChart, BarChart3 } from 'lucide-react';
+import { Users, BookOpen, Target, Calendar, ArrowRight, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/stores/auth';
-import { RtiPyramidChart } from '@/components/dashboard/rti-pyramid-chart';
+import { RecentNotifications } from "@/components/dashboard/recent-notifications";
 
 // Definir a interface para os estudantes
 interface Student {
@@ -114,36 +114,36 @@ export default function DashboardPage() {
               </Link>
             </Button>
           }
-          className="h-[300px]"
+          className="h-[420px]"
         >
-          <div className="flex h-full w-full items-center justify-center">
-            <div className="flex flex-col items-center w-full max-w-[220px]">
+          <div className="flex h-full w-full items-center justify-center py-4">
+            <div className="flex flex-col items-center w-full max-w-[300px]">
               {/* Tier 1 - Base da pirâmide */}
               <div className="relative w-full">
-                <div className="bg-green-500 h-16 w-full rounded-sm flex items-center justify-center text-white font-medium">
+                <div className="bg-green-500 h-24 w-full rounded-md flex items-center justify-center text-white font-medium text-lg shadow-md">
                   <span>Tier 1 (80%)</span>
                 </div>
-                <div className="absolute -bottom-2 left-0 right-0 text-center text-xs text-gray-600 dark:text-gray-400">
+                <div className="absolute -bottom-6 left-0 right-0 text-center text-sm text-gray-600 dark:text-gray-400 font-medium">
                   Suporte Universal
                 </div>
               </div>
               
               {/* Tier 2 - Meio da pirâmide */}
-              <div className="relative w-4/5 mt-4">
-                <div className="bg-yellow-500 h-14 w-full rounded-sm flex items-center justify-center text-white font-medium">
+              <div className="relative w-4/5 mt-10">
+                <div className="bg-yellow-500 h-20 w-full rounded-md flex items-center justify-center text-white font-medium text-lg shadow-md">
                   <span>Tier 2 (15%)</span>
                 </div>
-                <div className="absolute -bottom-2 left-0 right-0 text-center text-xs text-gray-600 dark:text-gray-400">
+                <div className="absolute -bottom-6 left-0 right-0 text-center text-sm text-gray-600 dark:text-gray-400 font-medium">
                   Suporte Direcionado
                 </div>
               </div>
               
               {/* Tier 3 - Topo da pirâmide */}
-              <div className="relative w-3/5 mt-4">
-                <div className="bg-red-500 h-12 w-full rounded-sm flex items-center justify-center text-white font-medium">
+              <div className="relative w-3/5 mt-10">
+                <div className="bg-red-500 h-16 w-full rounded-md flex items-center justify-center text-white font-medium text-lg shadow-md">
                   <span>Tier 3 (5%)</span>
                 </div>
-                <div className="absolute -bottom-2 left-0 right-0 text-center text-xs text-gray-600 dark:text-gray-400">
+                <div className="absolute -bottom-6 left-0 right-0 text-center text-sm text-gray-600 dark:text-gray-400 font-medium">
                   Suporte Intensivo
                 </div>
               </div>
@@ -162,39 +162,55 @@ export default function DashboardPage() {
               </Link>
             </Button>
           }
-          className="h-[300px]"
+          className="h-[420px]"
         >
-          <div className="flex h-full w-full p-4">
-            <div className="w-full">
-              <h3 className="text-sm font-medium mb-3">Principais Insights:</h3>
-              <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li>Aumento de 5% no número de estudantes no Tier 1 nos últimos 3 meses</li>
-                <li>Redução de 2% no número de estudantes no Tier 3 desde o início do ano letivo</li>
-                <li>Maior eficácia em intervenções de leitura (78% de sucesso)</li>
-                <li>25 estudantes movidos para tiers de menor intensidade este mês</li>
-              </ul>
-              <div className="mt-4 flex justify-center">
-                <BarChart3 className="h-20 w-20 text-innerview-primary opacity-50" />
+          <div className="flex h-full w-full p-6">
+            <div className="w-full flex flex-col justify-between">
+              <div>
+                <h3 className="text-base font-medium mb-4 text-innerview-secondary">Principais Insights:</h3>
+                <ul className="list-disc pl-5 space-y-4 text-sm">
+                  <li className="pb-1">
+                    <span className="font-medium">Aumento de 5%</span> no número de estudantes no Tier 1 nos últimos 3 meses
+                  </li>
+                  <li className="pb-1">
+                    <span className="font-medium">Redução de 2%</span> no número de estudantes no Tier 3 desde o início do ano letivo
+                  </li>
+                  <li className="pb-1">
+                    <span className="font-medium">Maior eficácia</span> em intervenções de leitura (78% de sucesso)
+                  </li>
+                  <li className="pb-1">
+                    <span className="font-medium">25 estudantes</span> movidos para tiers de menor intensidade este mês
+                  </li>
+                </ul>
+              </div>
+              <div className="flex justify-center mt-4">
+                <BarChart3 className="h-28 w-28 text-innerview-primary opacity-50" />
               </div>
             </div>
           </div>
         </ChartCard>
       </div>
 
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-innerview-secondary dark:text-white">Estudantes Recentes</h2>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/students" className="flex items-center">
-              <span>Ver todos</span>
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+      <div className="grid gap-6 md:grid-cols-2">
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-innerview-secondary dark:text-white">Estudantes Recentes</h2>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/students" className="flex items-center">
+                <span>Ver todos</span>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <DataTable
+            columns={studentColumns}
+            data={recentStudents}
+          />
         </div>
-        <DataTable
-          columns={studentColumns}
-          data={recentStudents}
-        />
+        
+        <div>
+          <RecentNotifications />
+        </div>
       </div>
     </div>
   );

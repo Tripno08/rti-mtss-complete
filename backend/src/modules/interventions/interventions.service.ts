@@ -3,23 +3,59 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateInterventionDto } from './dto/create-intervention.dto';
 import { UpdateInterventionDto } from './dto/update-intervention.dto';
 import { InterventionStatus } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class InterventionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async create(createInterventionDto: CreateInterventionDto) {
-    return this.prisma.intervention.create({
-      data: {
-        startDate: new Date(createInterventionDto.startDate),
-        endDate: createInterventionDto.endDate ? new Date(createInterventionDto.endDate) : null,
-        type: createInterventionDto.type,
-        description: createInterventionDto.description,
-        status: createInterventionDto.status || InterventionStatus.ACTIVE,
-        notes: createInterventionDto.notes,
-        studentId: createInterventionDto.studentId,
-      },
-    });
+    try {
+      // Criar a intervenção
+      const intervention = await this.prisma.intervention.create({
+        data: {
+          startDate: new Date(createInterventionDto.startDate),
+          endDate: createInterventionDto.endDate ? new Date(createInterventionDto.endDate) : null,
+          type: createInterventionDto.type,
+          description: createInterventionDto.description,
+          status: createInterventionDto.status || InterventionStatus.ACTIVE,
+          notes: createInterventionDto.notes,
+          studentId: createInterventionDto.studentId,
+        },
+        include: {
+          student: true,
+          teacher: true,
+          specialist: true,
+        },
+      });
+
+      // Enviar notificação para o professor
+      if (intervention.teacherId) {
+        await this.notificationsService.createSystemNotification(
+          intervention.teacherId,
+          'Nova intervenção atribuída',
+          `Uma nova intervenção foi atribuída para o estudante ${intervention.student.name}.`,
+          `/teacher-portal/interventions/${intervention.id}`,
+        );
+      }
+
+      // Enviar notificação para o especialista
+      if (intervention.specialistId) {
+        await this.notificationsService.createSystemNotification(
+          intervention.specialistId,
+          'Nova intervenção criada',
+          `Uma nova intervenção foi criada para o estudante ${intervention.student.name}.`,
+          `/specialist-portal/interventions/${intervention.id}`,
+        );
+      }
+
+      return intervention;
+    } catch (error) {
+      throw new Error(`Erro ao criar intervenção: ${error.message}`);
+    }
   }
 
   async findAll() {

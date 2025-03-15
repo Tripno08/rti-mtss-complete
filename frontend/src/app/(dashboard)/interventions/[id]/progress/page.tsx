@@ -219,9 +219,8 @@ interface PageProps {
   }>;
 }
 
-export default function InterventionProgressPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function InterventionProgressPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -236,7 +235,7 @@ export default function InterventionProgressPage({ params }: PageProps) {
 
   // Carregar dados do plano ao montar o componente
   useState(() => {
-    fetchPlan(params.id);
+    fetchPlan(id);
   });
 
   // Configurar o formulário de sessão

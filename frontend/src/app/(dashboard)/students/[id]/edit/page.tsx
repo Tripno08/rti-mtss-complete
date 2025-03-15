@@ -53,28 +53,27 @@ const studentSchema = z.object({
 
 type StudentForm = z.infer<typeof studentSchema>;
 
-// Dados simulados
-const mockStudent = {
-  id: '1',
-  name: 'João Silva',
-  grade: '3º Ano',
-  dateOfBirth: '2015-03-15',
-  riskLevel: 'high',
-  responsibleTeacher: 'Maria Santos',
-  notes: 'Apresenta dificuldades em leitura e compreensão textual.',
-} as const;
-
 interface PageProps {
   params: Promise<{
     id: string;
   }>;
 }
 
-export default function EditStudentPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function EditStudentPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Dados simulados
+  const mockStudent = {
+    id: id,
+    name: 'João Silva',
+    dateOfBirth: '2015-05-10',
+    grade: '3º Ano',
+    responsibleTeacher: 'Maria Santos',
+    riskLevel: 'medium' as 'low' | 'medium' | 'high',
+    notes: 'Aluno apresenta dificuldades em leitura e escrita. Está recebendo suporte adicional nas aulas de reforço.',
+  };
 
   const form = useForm<StudentForm>({
     resolver: zodResolver(studentSchema),
@@ -95,10 +94,10 @@ export default function EditStudentPage({ params }: PageProps) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // TODO: Implementar a chamada real à API
-      console.log('Atualizando estudante:', params.id, data);
+      console.log('Atualizando estudante:', id, data);
       
       toast.success('Estudante atualizado com sucesso!');
-      router.push(`/students/${params.id}`);
+      router.push(`/students/${id}`);
     } catch (error) {
       console.error('Erro ao atualizar estudante:', error);
       toast.error('Erro ao atualizar estudante. Tente novamente.');

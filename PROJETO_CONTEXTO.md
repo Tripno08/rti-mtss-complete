@@ -11,14 +11,17 @@ O RTI-MTSS (Resposta à Intervenção e Sistema de Suporte Multi-Níveis) é uma
 - **Tecnologias**: NestJS, TypeScript, Prisma ORM
 - **Banco de Dados**: MySQL
 - **Autenticação**: JWT (JSON Web Tokens)
+- **Cache**: Redis
 - **Containerização**: Docker
 
 ### Frontend
 
 - **Tecnologias**: Next.js, React, TypeScript, Tailwind CSS
+- **Componentes UI**: shadcn/ui
 - **Gerenciamento de Estado**: Zustand
 - **Requisições HTTP**: Axios
-- **Containerização**: Docker
+- **Containerização**: Docker (desenvolvimento)
+- **Execução Local**: Desenvolvimento local para melhor DX
 
 ## Estrutura do Projeto
 
@@ -31,10 +34,17 @@ backend/
 │   ├── modules/             # Módulos da aplicação
 │   │   ├── assessments/     # Avaliações dos alunos
 │   │   ├── auth/            # Autenticação e autorização
+│   │   ├── base-interventions/ # Intervenções base
+│   │   ├── calendar/        # Eventos de calendário
+│   │   ├── classes/         # Gerenciamento de turmas
+│   │   ├── contents/        # Conteúdos didáticos
 │   │   ├── dashboard/       # Dados para o dashboard
 │   │   ├── integrations/    # Integrações com sistemas externos
 │   │   ├── interventions/   # Intervenções para os alunos
+│   │   ├── lesson-plans/    # Planos de aula
 │   │   ├── meetings/        # Reuniões e colaboração
+│   │   ├── notifications/   # Sistema de notificações
+│   │   ├── schools/         # Gerenciamento de escolas
 │   │   ├── students/        # Gerenciamento de alunos
 │   │   ├── teams/           # Equipes de educadores
 │   │   └── users/           # Gerenciamento de usuários
@@ -54,12 +64,24 @@ frontend/
 │   ├── app/                 # Páginas da aplicação (Next.js App Router)
 │   │   ├── (auth)/          # Páginas de autenticação
 │   │   └── (dashboard)/     # Páginas do dashboard e funcionalidades
+│   │       ├── calendar/    # Módulo de calendário
+│   │       ├── classes/     # Gerenciamento de turmas
+│   │       ├── dashboard/   # Dashboard principal
+│   │       ├── interventions/ # Intervenções
+│   │       ├── lesson-plans/ # Planos de aula
+│   │       ├── meetings/    # Reuniões
+│   │       ├── schools/     # Escolas
+│   │       ├── students/    # Estudantes
+│   │       └── teacher-portal/ # Portal do professor
 │   ├── components/          # Componentes reutilizáveis
 │   │   ├── analytics/       # Componentes de análise de dados
+│   │   ├── calendar/        # Componentes de calendário
 │   │   ├── dashboard/       # Componentes do dashboard
 │   │   ├── meetings/        # Componentes de reuniões
 │   │   └── ui/              # Componentes de UI genéricos
+│   ├── api/                 # Clientes de API para o backend
 │   ├── lib/                 # Utilitários e hooks
+│   │   ├── api/             # Configuração da API
 │   │   ├── stores/          # Stores Zustand
 │   │   └── utils/           # Funções utilitárias
 │   ├── providers/           # Providers de contexto React
@@ -81,8 +103,17 @@ frontend/
 ### Gerenciamento de Usuários
 
 - [x] Criação, leitura, atualização e exclusão de usuários
-- [x] Diferentes papéis: Administrador, Professor, Coordenador
+- [x] Diferentes papéis: Administrador, Professor, Coordenador, Tutor
 - [x] Perfil de usuário com informações básicas
+- [x] Associação de usuários a escolas
+
+### Escolas e Turmas
+
+- [x] Gerenciamento de redes escolares
+- [x] Cadastro e gerenciamento de escolas
+- [x] Gerenciamento de turmas
+- [x] Associação de estudantes a turmas
+- [x] Portal do professor para gerenciamento de turmas
 
 ### Gerenciamento de Estudantes
 
@@ -90,27 +121,61 @@ frontend/
 - [x] Visualização de perfil de estudante
 - [x] Edição de informações do estudante
 - [x] Listagem de estudantes com filtros
+- [x] Associação de dificuldades de aprendizagem
 
-### Avaliações
+### Avaliações e Rastreios
 
 - [x] Criação de avaliações para estudantes
 - [x] Diferentes tipos de avaliações (acadêmicas, comportamentais)
 - [x] Histórico de avaliações por estudante
 - [x] Visualização de resultados de avaliações
+- [x] Instrumentos de rastreio
 
 ### Intervenções
 
-- [x] Criação de planos de intervenção
-- [x] Acompanhamento de intervenções
-- [x] Marcação de intervenções como concluídas ou canceladas
-- [x] Histórico de intervenções por estudante
+- [x] Biblioteca de intervenções baseadas em evidências
+- [x] Protocolos de intervenção
+- [x] Acompanhamento de progresso
+- [x] Metas e resultados
+- [x] Categorização por área e nível
 
-### Equipes e Colaboração
+### Conteúdos e Planos de Aula
 
-- [x] Criação de equipes de educadores
-- [x] Adição de membros às equipes
-- [x] Atribuição de estudantes às equipes
-- [x] Agendamento de reuniões de equipe
+- [x] Gerenciamento de conteúdos didáticos
+- [x] Criação e edição de planos de aula
+- [x] Associação de conteúdos a turmas
+- [x] Categorização de conteúdos por tipo e status
+
+### Calendário (Novo)
+
+- [x] Visualização de eventos em diferentes formatos (mensal, semanal, diária)
+- [x] Criação e gerenciamento de eventos
+- [x] Eventos com diferentes tipos (aula, reunião, tarefa, lembrete)
+- [x] Personalização de cores e detalhes dos eventos
+- [x] Filtros por usuário e intervalo de datas
+- [x] Integração com reuniões e intervenções
+
+### Reuniões e Comunicações
+
+- [x] Agendamento de reuniões
+- [x] Participantes e status de participação
+- [x] Comunicação entre equipe e responsáveis
+- [x] Notificações de eventos e atividades
+
+### Notificações
+
+- [x] Sistema de notificações em tempo real
+- [x] Notificações não lidas
+- [x] Diferentes tipos de notificações
+- [x] Marcação de notificações como lidas
+
+### Interface do Usuário
+
+- [x] Barra lateral (Sidebar) reorganizada com grupos lógicos
+- [x] Cabeçalho (Header) com menus de navegação rápida
+- [x] Alternador de tema (claro/escuro/sistema)
+- [x] Layout responsivo para diferentes tamanhos de tela
+- [x] Componentes de UI modernos e acessíveis
 
 ### Dashboard e Análises
 
@@ -119,6 +184,7 @@ frontend/
 - [x] Lista de estudantes de alto risco
 - [x] Eficácia das intervenções
 - [x] Linha do tempo de atividades recentes
+- [x] Notificações recentes
 
 ## Funcionalidades Pendentes
 
@@ -134,7 +200,7 @@ frontend/
 - [ ] Importação em massa de usuários
 - [ ] Histórico de atividades do usuário
 - [ ] Configurações avançadas de perfil
-- [ ] Notificações personalizadas
+- [ ] Preferências de notificações
 
 ### Gerenciamento de Estudantes
 
@@ -152,10 +218,17 @@ frontend/
 
 ### Intervenções
 
-- [ ] Biblioteca de intervenções baseadas em evidências
 - [ ] Recomendações automáticas de intervenções
 - [ ] Monitoramento de fidelidade de implementação
 - [ ] Análise de eficácia de intervenções por categoria
+- [ ] Biblioteca expandida de intervenções
+
+### Calendário
+
+- [ ] Eventos recorrentes
+- [ ] Lembretes e notificações de eventos
+- [ ] Exportação de eventos para outros calendários
+- [ ] Visualização de disponibilidade de participantes
 
 ### Equipes e Colaboração
 
@@ -178,6 +251,43 @@ frontend/
 - [ ] Integração com sistemas de informação estudantil
 - [ ] API pública para integrações de terceiros
 
+## Atualizações Recentes
+
+### Módulo de Calendário (Tag: 15032025-BC1.3)
+
+O módulo de calendário foi implementado para fornecer uma interface completa para gerenciamento de eventos. Este módulo permite:
+
+- Visualização de eventos em três formatos: mensal, semanal e diária
+- Criação e edição de eventos com informações detalhadas
+- Categorização de eventos por tipo (aula, reunião, tarefa, lembrete, outro)
+- Personalização de cores para melhor visualização
+- Associação de eventos a escolas, turmas e planos de aula
+- Gerenciamento de participantes com status de participação
+- Filtros por usuário e intervalo de datas
+- Interface responsiva e intuitiva
+
+Este módulo se integra com outros componentes do sistema, como reuniões e intervenções, proporcionando uma visão unificada das atividades programadas.
+
+### Módulo de Conteúdos e Planos de Aula (Tag: 14032025-BC1.3)
+
+O módulo de conteúdos e planos de aula foi aprimorado para utilizar a API real em vez de dados simulados. As melhorias incluem:
+
+- Integração completa com a API backend para operações CRUD
+- Melhor tratamento de erros e estados de carregamento
+- Tipagem forte para garantir integridade dos dados
+- Interface de usuário aprimorada para melhor experiência
+- Filtros e pesquisa de conteúdos
+
+### Módulo de Notificações (Tag: 13032025-BC1.3)
+
+O sistema de notificações foi implementado para fornecer atualizações em tempo real sobre eventos importantes. Este módulo inclui:
+
+- Exibição de notificações não lidas
+- Diferentes tipos de notificações (reunião, intervenção, sistema)
+- Marcação de notificações como lidas
+- Navegação para recursos relacionados
+- Componente de notificações recentes no dashboard
+
 ## Desafios Técnicos Resolvidos
 
 1. **Autenticação e Redirecionamento**: Resolvemos problemas de redirecionamento após o login, simplificando o middleware e a lógica de autenticação.
@@ -185,6 +295,14 @@ frontend/
 2. **Containerização**: Implementamos uma configuração Docker completa para desenvolvimento e produção.
 
 3. **Persistência de Estado**: Configuramos o Zustand com persistência para manter o estado de autenticação entre recarregamentos de página.
+
+4. **Interface do Usuário Moderna**: Implementamos uma interface de usuário moderna e responsiva com suporte a temas claro e escuro.
+
+5. **Organização da Navegação**: Reorganizamos a barra lateral e o cabeçalho para uma experiência de usuário mais intuitiva.
+
+6. **Integração com API Real**: Substituímos dados simulados por chamadas à API real em vários módulos.
+
+7. **Ambiente de Desenvolvimento Híbrido**: Configuramos um ambiente onde o frontend roda localmente e o backend em Docker para melhor experiência de desenvolvimento.
 
 ## Desafios Técnicos Pendentes
 
@@ -195,6 +313,14 @@ frontend/
 3. **Escalabilidade**: Preparar a arquitetura para suportar múltiplas escolas ou distritos.
 
 4. **Segurança de Dados**: Implementar criptografia avançada para dados sensíveis dos estudantes.
+
+5. **Problemas de Compilação do Frontend**: Resolver erros relacionados a arquivos não encontrados durante a compilação do Next.js.
+
+6. **Otimização de Cache**: Resolver problemas de cache do webpack que estão causando falhas durante o desenvolvimento.
+
+7. **Validação de Dados**: Implementar validação mais robusta no frontend e backend.
+
+8. **Testes Automatizados**: Adicionar testes unitários e de integração para garantir a qualidade do código.
 
 ## Ambiente de Desenvolvimento
 
@@ -208,41 +334,35 @@ frontend/
 ### Configuração
 
 1. Clone o repositório: `git clone https://github.com/Tripno08/rti-mtss-complete.git`
-2. Inicie os containers: `docker compose up -d`
-3. Acesse o frontend em: `http://localhost:3000`
-4. Acesse o backend em: `http://localhost:3001/api`
-
-### Credenciais de Teste
-
-- **Email**: admin@example.com
-- **Senha**: admin123
-
-## Convenções e Padrões
-
-### Backend
-
-- Controllers para manipulação de requisições HTTP
-- Services para lógica de negócios
-- DTOs para validação de dados de entrada
-- Prisma para acesso ao banco de dados
-- Guards para controle de acesso
-
-### Frontend
-
-- App Router do Next.js para roteamento
-- Zustand para gerenciamento de estado
-- Componentes funcionais com hooks
-- Tailwind CSS para estilização
-- Axios para requisições HTTP
+2. Inicie os serviços de backend, MySQL e Redis: `docker compose up -d`
+3. Instale as dependências do frontend:
+   ```bash
+   cd frontend
+   npm install
+   ```
+4. Execute o frontend localmente:
+   ```bash
+   npm run dev
+   ```
+5. Acesse:
+   - Frontend: http://localhost:3002
+   - Backend API: http://localhost:3001
+   - Documentação API: http://localhost:3001/api
 
 ## Próximos Passos
 
-1. Implementar recuperação de senha
-2. Adicionar mais relatórios e análises
-3. Melhorar a interface do usuário para dispositivos móveis
-4. Implementar integrações com sistemas externos
-5. Adicionar testes automatizados mais abrangentes
+1. **Implementação de Testes**: Adicionar testes unitários e de integração para garantir a qualidade do código.
+2. **Melhorias de Desempenho**: Otimizar consultas ao banco de dados e carregamento de páginas.
+3. **Expansão de Funcionalidades**: Implementar recursos pendentes de alta prioridade.
+4. **Documentação Completa**: Melhorar a documentação da API e do código.
+5. **Preparação para Produção**: Configurar ambiente de produção e pipeline de CI/CD.
 
----
+## Contribuição
 
-Este documento serve como um guia abrangente para o projeto RTI-MTSS, fornecendo contexto para o desenvolvimento de novas funcionalidades e melhorias no sistema existente. 
+Para contribuir com o projeto, siga estas etapas:
+
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/nome-da-feature`)
+3. Faça commit das suas alterações (`git commit -m 'Adiciona nova feature'`)
+4. Faça push para a branch (`git push origin feature/nome-da-feature`)
+5. Abra um Pull Request 

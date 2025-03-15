@@ -18,7 +18,8 @@ const userSchema = z.object({
 type UserFormData = z.infer<typeof userSchema>;
 
 export default function EditUserPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

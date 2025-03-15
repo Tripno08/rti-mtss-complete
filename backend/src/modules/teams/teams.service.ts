@@ -26,6 +26,7 @@ export class TeamsService {
             },
           },
           include: {
+            school: true,
             _count: {
               select: {
                 members: true,
@@ -39,6 +40,7 @@ export class TeamsService {
       // Caso contrário, buscar todas as equipes
       return await this.prisma.rtiTeam.findMany({
         include: {
+          school: true,
           _count: {
             select: {
               members: true,
@@ -58,6 +60,7 @@ export class TeamsService {
       const team = await this.prisma.rtiTeam.findUnique({
         where: { id },
         include: {
+          school: true,
           members: {
             include: {
               user: {

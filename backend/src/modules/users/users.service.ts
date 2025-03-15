@@ -71,8 +71,17 @@ export class UsersService {
   async findAll() {
     try {
       this.logger.log('Buscando todos os usuários');
-      const users = await this.prisma.user.findMany();
-      return users.map(({ password, ...rest }) => rest);
+      const users = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        }
+      });
+      return users;
     } catch (error) {
       this.logger.error('Erro ao buscar todos os usuários', error);
       throw new InternalServerErrorException('Erro ao buscar usuários');
@@ -90,6 +99,15 @@ export class UsersService {
       
       const user = await this.prisma.user.findUnique({
         where: { id },
+        select: {
+          id: true,
+          email: true,
+          password: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        }
       });
 
       if (!user) {
@@ -120,6 +138,15 @@ export class UsersService {
       
       return this.prisma.user.findUnique({
         where: { email },
+        select: {
+          id: true,
+          email: true,
+          password: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        }
       });
     } catch (error) {
       if (error instanceof BadRequestException) {

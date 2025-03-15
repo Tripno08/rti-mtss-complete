@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/lib/stores/auth';
 
-export function AuthLayoutClient({
+// Componente interno que usa useSearchParams
+function AuthLayoutInternal({
   children,
 }: {
   children: React.ReactNode;
@@ -13,7 +14,7 @@ export function AuthLayoutClient({
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const from = searchParams.get('from') || '/dashboard';
+  const from = searchParams?.get('from') || '/dashboard';
 
   useEffect(() => {
     setMounted(true);
@@ -29,4 +30,17 @@ export function AuthLayoutClient({
   }
 
   return <>{children}</>;
+}
+
+// Componente exportado que envolve o componente interno com Suspense
+export function AuthLayoutClient({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <AuthLayoutInternal>{children}</AuthLayoutInternal>
+    </Suspense>
+  );
 } 

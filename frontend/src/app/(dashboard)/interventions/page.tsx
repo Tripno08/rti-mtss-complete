@@ -6,86 +6,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/lib/utils/api';
 import { Loader2 } from 'lucide-react';
-
-interface Intervention {
-  id: string;
-  startDate: string;
-  endDate?: string;
-  type: string;
-  description: string;
-  status: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
-  notes?: string;
-  studentId: string;
-  student?: {
-    id: string;
-    name: string;
-    grade: string;
-  };
-}
-
-// Dados simulados para desenvolvimento
-const mockInterventions: Intervention[] = [
-  {
-    id: '1',
-    startDate: '2025-03-01',
-    endDate: '2025-04-01',
-    type: 'Reforço de Leitura',
-    description: 'Sessões de reforço em leitura e compreensão textual',
-    status: 'ACTIVE',
-    notes: 'O aluno está progredindo bem',
-    studentId: '1',
-    student: {
-      id: '1',
-      name: 'João Silva',
-      grade: '3º Ano'
-    }
-  },
-  {
-    id: '2',
-    startDate: '2025-02-15',
-    endDate: '2025-03-15',
-    type: 'Apoio em Matemática',
-    description: 'Atividades de reforço em operações matemáticas básicas',
-    status: 'COMPLETED',
-    notes: 'Intervenção concluída com sucesso',
-    studentId: '2',
-    student: {
-      id: '2',
-      name: 'Ana Souza',
-      grade: '2º Ano'
-    }
-  },
-  {
-    id: '3',
-    startDate: '2025-03-10',
-    type: 'Suporte Comportamental',
-    description: 'Sessões de orientação para melhorar comportamento em sala',
-    status: 'ACTIVE',
-    studentId: '3',
-    student: {
-      id: '3',
-      name: 'Pedro Santos',
-      grade: '4º Ano'
-    }
-  },
-  {
-    id: '4',
-    startDate: '2025-01-20',
-    endDate: '2025-02-20',
-    type: 'Apoio em Escrita',
-    description: 'Atividades para desenvolvimento da escrita',
-    status: 'CANCELLED',
-    notes: 'Cancelada a pedido dos pais',
-    studentId: '4',
-    student: {
-      id: '4',
-      name: 'Mariana Costa',
-      grade: '1º Ano'
-    }
-  }
-];
+import { getInterventions, deleteIntervention, Intervention } from '@/lib/api/interventions';
 
 export default function InterventionsPage() {
   const [interventions, setInterventions] = useState<Intervention[]>([]);
@@ -96,15 +18,22 @@ export default function InterventionsPage() {
 
   useEffect(() => {
     setIsClient(true);
-    // Carregar dados simulados
-    try {
-      setInterventions(mockInterventions);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Erro ao carregar dados simulados:', error);
-      setIsError(true);
-      setIsLoading(false);
-    }
+    
+    const fetchInterventions = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getInterventions();
+        setInterventions(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Erro ao carregar intervenções:', error);
+        setIsError(true);
+        setIsLoading(false);
+        toast.error('Erro ao carregar intervenções. Tente novamente mais tarde.');
+      }
+    };
+
+    fetchInterventions();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -113,7 +42,7 @@ export default function InterventionsPage() {
     }
 
     try {
-      // Simulação de exclusão
+      await deleteIntervention(id);
       setInterventions(interventions.filter((intervention) => intervention.id !== id));
       toast.success('Intervenção excluída com sucesso!');
     } catch (error) {
@@ -125,7 +54,7 @@ export default function InterventionsPage() {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
+      return date.toLocaleDateString('pt-BR');
     } catch {
       return dateString;
     }
@@ -249,8 +178,9 @@ export default function InterventionsPage() {
                       Editar
                     </Button>
                     <Button
-                      variant="destructive"
+                      variant="outline"
                       size="sm"
+                      className="text-red-500 hover:text-red-700"
                       onClick={() => handleDelete(intervention.id)}
                     >
                       Excluir

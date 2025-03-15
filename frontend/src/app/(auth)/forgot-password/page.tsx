@@ -65,7 +65,12 @@ export default function ForgotPasswordPage() {
       
       // Mensagem de erro personalizada com base na resposta da API
       const apiError = error as ApiError;
-      const errorMessage = apiError.response?.data?.message || 'Erro ao solicitar recuperação de senha. Tente novamente.';
+      let errorMessage = 'Erro ao solicitar recuperação de senha. Tente novamente.';
+      
+      if (apiError.response && apiError.response.data && apiError.response.data.message) {
+        errorMessage = apiError.response.data.message;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

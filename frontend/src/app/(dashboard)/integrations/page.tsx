@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { api } from '@/lib/utils/api';
+// import { api } from '@/lib/utils/api';
 
 interface Integration {
   id: string;
@@ -19,6 +19,42 @@ interface Integration {
   updatedAt: string;
 }
 
+// Dados mockados para desenvolvimento
+const MOCK_INTEGRATIONS: Integration[] = [
+  {
+    id: '1',
+    platform: 'GOOGLE_CLASSROOM',
+    name: 'Google Classroom - Escola Municipal',
+    active: true,
+    createdAt: '2025-01-15T10:00:00Z',
+    updatedAt: '2025-03-10T14:30:00Z'
+  },
+  {
+    id: '2',
+    platform: 'MICROSOFT_TEAMS',
+    name: 'Microsoft Teams - Rede Estadual',
+    active: true,
+    createdAt: '2025-02-01T09:15:00Z',
+    updatedAt: '2025-03-05T11:20:00Z'
+  },
+  {
+    id: '3',
+    platform: 'LTI',
+    name: 'Moodle - Colégio Particular',
+    active: false,
+    createdAt: '2025-01-20T13:45:00Z',
+    updatedAt: '2025-03-12T16:10:00Z'
+  },
+  {
+    id: '4',
+    platform: 'CUSTOM',
+    name: 'API Personalizada - Sistema Legado',
+    active: true,
+    createdAt: '2024-11-10T08:30:00Z',
+    updatedAt: '2025-02-28T15:45:00Z'
+  }
+];
+
 export default function IntegrationsPage() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,8 +64,9 @@ export default function IntegrationsPage() {
     const fetchIntegrations = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get('/integrations');
-        setIntegrations(response.data);
+        // Simulando um delay de rede
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setIntegrations(MOCK_INTEGRATIONS);
       } catch (error) {
         console.error('Erro ao buscar integrações:', error);
         toast.error('Erro ao carregar integrações. Tente novamente mais tarde.');

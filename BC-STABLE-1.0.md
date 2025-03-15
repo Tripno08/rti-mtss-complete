@@ -8,6 +8,7 @@ Esta é a versão estável BC Stable 1.0 do projeto Innerview (anteriormente RTI
 - **Data de Lançamento**: 11 de março de 2025
 - **Branch**: bc-stable-1.0
 - **Tag**: v1.0-bc-stable
+- **Tag de Intervenções Base**: 12032025-BC1.2
 
 ## Identidade Visual
 
@@ -97,6 +98,36 @@ docker-compose up -d
    - Implementação do novo nome "Innerview" em toda a interface
    - Integração do novo logotipo na barra de navegação e tela de login
    - Atualização das referências de "RTI/MTSS" para "Innerview" em toda a aplicação
+
+### Módulo de Intervenções Base (Tag: 12032025-BC1.2)
+
+1. **Backend para Intervenções Base**
+   - Implementado módulo `base-interventions` no backend
+   - Criado modelo de dados para intervenções base no Prisma
+   - Implementadas operações CRUD completas para intervenções base
+   - Adicionados endpoints para listar, criar, atualizar, visualizar e excluir intervenções base
+   - Suporte para filtragem por área, nível e status (ativo/inativo)
+
+2. **Frontend para Intervenções Base**
+   - Adicionada página principal `/interventions/base` para listar todas as intervenções base
+   - Implementada página de detalhes `/interventions/base/[id]` para visualizar informações completas
+   - Criada página de criação `/interventions/base/new` com formulário completo
+   - Adicionada página de edição `/interventions/base/[id]/edit` para atualizar intervenções existentes
+   - Integração com o menu lateral na seção "Intervenção e Suporte"
+
+3. **Funcionalidades de Intervenções Base**
+   - Suporte para diferentes áreas de intervenção (Leitura, Escrita, Matemática, etc.)
+   - Classificação por níveis (Tier 1, Tier 2, Tier 3)
+   - Definição de frequência de aplicação (Diária, Semanal, Quinzenal, etc.)
+   - Campos para descrição, objetivo, materiais necessários e evidências científicas
+   - Ativação/desativação de intervenções base sem exclusão permanente
+
+4. **Interface de Usuário para Intervenções Base**
+   - Tabela interativa com filtros para visualização rápida
+   - Badges coloridos para identificação visual de áreas e níveis
+   - Layout responsivo para todos os tamanhos de tela
+   - Formulários com validação completa usando Zod
+   - Feedback visual para operações de criação, edição e exclusão
 
 ## Correções Implementadas
 

@@ -171,11 +171,12 @@ interface PageProps {
   }>;
 }
 
-export default function StudentGoalsPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function StudentGoalsPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('active');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
 
   const { 
     student, 
@@ -190,8 +191,8 @@ export default function StudentGoalsPage({ params }: PageProps) {
 
   // Carregar dados do estudante e metas
   useState(() => {
-    fetchStudent(params.id);
-    fetchGoals(params.id);
+    fetchStudent(id);
+    fetchGoals(id);
   });
 
   // Função para formatar a data
@@ -295,7 +296,7 @@ export default function StudentGoalsPage({ params }: PageProps) {
       <div className="flex items-center mb-6">
         <Button
           variant="ghost"
-          onClick={() => router.push(`/students/${params.id}`)}
+          onClick={() => router.push(`/students/${id}`)}
           className="mr-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

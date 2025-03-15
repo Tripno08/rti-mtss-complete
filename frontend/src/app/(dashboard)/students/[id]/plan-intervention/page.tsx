@@ -49,7 +49,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/utils/api';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 // Enums
@@ -178,14 +178,14 @@ interface PageProps {
   }>;
 }
 
-export default function PlanInterventionPage({ params }: PageProps) {
-  const unwrappedParams = React.use(params);
-  const { id } = unwrappedParams;
+export default async function PlanInterventionPage({ params }: PageProps) {
+  const { id } = await params;
   const router = useRouter();
   const [goals, setGoals] = useState<{ id: string; descricao: string; criterioSucesso: string; prazo: string }[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { 
-    student, 
+  const {
+    student,
     selectedDifficulty,
     recommendedInterventions,
     isLoading,
@@ -197,7 +197,7 @@ export default function PlanInterventionPage({ params }: PageProps) {
 
   // Carregar dados do estudante ao montar o componente
   useState(() => {
-    fetchStudent(params.id);
+    fetchStudent(id);
   });
 
   // Configurar o formulário
@@ -220,7 +220,7 @@ export default function PlanInterventionPage({ params }: PageProps) {
       id: Math.random().toString(36).substr(2, 9),
       descricao: '',
       criterioSucesso: '',
-      prazo: format(new Date(), 'yyyy-MM-dd'),
+      prazo: format(addDays(new Date(), 30), 'yyyy-MM-dd'),
     };
     setGoals([...goals, newGoal]);
   };
@@ -235,10 +235,10 @@ export default function PlanInterventionPage({ params }: PageProps) {
     try {
       await api.post('/intervention-plans', {
         ...values,
-        estudanteId: params.id,
+        estudanteId: id,
       });
       toast.success('Plano de intervenção criado com sucesso');
-      router.push(`/students/${params.id}`);
+      router.push(`/students/${id}`);
     } catch (error) {
       console.error('Erro ao criar plano:', error);
       toast.error('Erro ao criar plano de intervenção');
@@ -313,7 +313,7 @@ export default function PlanInterventionPage({ params }: PageProps) {
       <div className="flex items-center mb-6">
         <Button
           variant="ghost"
-          onClick={() => router.push(`/students/${params.id}`)}
+          onClick={() => router.push(`/students/${id}`)}
           className="mr-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

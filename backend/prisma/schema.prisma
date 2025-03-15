@@ -14,6 +14,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Modelo de Rede/Distrito Escolar
+model SchoolNetwork {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  code          String?   // Código opcional para identificação da rede
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  schools       School[]
+  
+  @@map("school_networks")
+}
+
+// Modelo de Escola
+model School {
+  id            String    @id @default(uuid())
+  name          String
+  code          String?   // Código opcional para identificação da escola
+  address       String?
+  phone         String?
+  email         String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  networkId     String?
+  network       SchoolNetwork? @relation(fields: [networkId], references: [id])
+  students      Student[]
+  teams         RtiTeam[]
+  classes       Class[]        // Relação com turmas
+  calendarEvents CalendarEvent[] // Relação com eventos de calendário
+  
+  @@map("schools")
+}
+
 // Modelo de Usuário
 model User {
   id            String    @id @default(uuid())
@@ -23,6 +62,10 @@ model User {
   role          UserRole  @default(TEACHER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  // Novo relacionamento com escola - comentado para resolver o problema
+  // schoolId      String?
+  // school        School?   @relation(fields: [schoolId], references: [id])
 
   // Relacionamentos
   students      Student[]
@@ -37,6 +80,10 @@ model User {
   notifications      Notification[]
   rastreiosAplicados Screening[]
   sessoesAplicadas   InterventionSession[]
+  classes            Class[]          // Relação com turmas
+  lessonPlans        LessonPlan[]     // Relação com planos de aula
+  createdEvents      CalendarEvent[]  @relation("EventCreator") // Eventos criados
+  eventParticipations CalendarEventParticipant[] // Participações em eventos
   
   @@map("users")
 }
@@ -50,6 +97,10 @@ model Student {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
+  // Novo relacionamento com escola
+  schoolId      String?
+  school        School?   @relation(fields: [schoolId], references: [id])
+  
   // Relacionamentos
   userId        String
   user          User      @relation(fields: [userId], references: [id])
@@ -61,6 +112,7 @@ model Student {
   referrals          Referral[]
   dificuldades       EstudanteDificuldade[]
   rastreios          Screening[]
+  classes            ClassStudent[]    // Nova relação com turmas
   
   @@map("students")
 }
@@ -213,7 +265,11 @@ model RtiTeam {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
-  // Relacionamentos
+  // Novo relacionamento com escola
+  schoolId      String?
+  school        School?   @relation(fields: [schoolId], references: [id])
+  
+  // Relacionamentos existentes
   members       RtiTeamMember[]
   meetings      RtiMeeting[]
   students      StudentTeam[]
@@ -866,4 +922,136 @@ model DificuldadeIntervencao {
   
   @@unique([dificuldadeId, intervencaoId])
   @@map("dificuldade_intervencoes")
+}
+
+// Modelo de Turma
+model Class {
+  id            String    @id @default(uuid())
+  name          String
+  grade         String
+  subject       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id])
+  teacherId     String
+  teacher       User      @relation(fields: [teacherId], references: [id])
+  students      ClassStudent[]
+  contents      Content[]
+  lessonPlans   LessonPlan[] // Relação com planos de aula
+  calendarEvents CalendarEvent[] // Relação com eventos de calendário
+  
+  @@map("classes")
+}
+
+// Modelo de Relação Turma-Estudante
+model ClassStudent {
+  id            String    @id @default(uuid())
+  joinedAt      DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamentos
+  classId       String
+  class         Class     @relation(fields: [classId], references: [id])
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  
+  @@unique([classId, studentId])
+  @@map("class_students")
+}
+
+// Modelo de Conteúdo
+model Content {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  type        String    // 'lesson', 'activity', 'assessment'
+  status      String    // 'draft', 'published'
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relacionamentos
+  classId     String
+  class       Class     @relation(fields: [classId], references: [id])
+  lessonPlans LessonPlan[] // Relação com planos de aula
+  
+  @@map("contents")
+}
+
+// Modelo de Plano de Aula
+model LessonPlan {
+  id              String    @id @default(uuid())
+  title           String
+  description     String?
+  objectives      String?   // Objetivos da aula
+  resources       String?   // Recursos necessários
+  activities      String?   // Atividades planejadas
+  assessment      String?   // Avaliação da aprendizagem
+  duration        Int?      // Duração em minutos
+  date            DateTime? // Data planejada para a aula
+  status          String    @default("draft") // 'draft', 'published', 'completed'
+  notes           String?   // Observações adicionais
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relacionamentos
+  classId         String
+  class           Class     @relation(fields: [classId], references: [id])
+  contentId       String?
+  content         Content?  @relation(fields: [contentId], references: [id])
+  teacherId       String
+  teacher         User      @relation(fields: [teacherId], references: [id])
+  calendarEvents  CalendarEvent[]
+  
+  @@map("lesson_plans")
+}
+
+// Modelo de Evento de Calendário
+model CalendarEvent {
+  id              String    @id @default(uuid())
+  title           String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime?
+  allDay          Boolean   @default(false)
+  location        String?
+  type            String    // 'meeting', 'lesson', 'assessment', 'intervention', 'personal'
+  status          String    @default("scheduled") // 'scheduled', 'cancelled', 'completed'
+  color           String?   // Cor para exibição no calendário
+  recurrence      String?   // Padrão de recorrência (JSON)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relacionamentos
+  creatorId       String
+  creator         User      @relation(fields: [creatorId], references: [id], name: "EventCreator")
+  participants    CalendarEventParticipant[]
+  schoolId        String?
+  school          School?   @relation(fields: [schoolId], references: [id])
+  classId         String?
+  class           Class?    @relation(fields: [classId], references: [id])
+  lessonPlanId    String?
+  lessonPlan      LessonPlan? @relation(fields: [lessonPlanId], references: [id])
+  
+  @@map("calendar_events")
+}
+
+// Modelo de Participante de Evento
+model CalendarEventParticipant {
+  id              String    @id @default(uuid())
+  status          String    @default("pending") // 'pending', 'accepted', 'declined'
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relacionamentos
+  eventId         String
+  event           CalendarEvent @relation(fields: [eventId], references: [id])
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  
+  @@unique([eventId, userId])
+  @@map("calendar_event_participants")
 }
